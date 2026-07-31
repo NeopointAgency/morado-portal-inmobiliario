@@ -92,9 +92,28 @@
   animation-direction: reverse;
 }
 
+/* Se pausa al pasar el cursor (para leer testimonios) */
+.marquee-pausable:hover {
+  animation-play-state: paused;
+}
+
+/* Bordes desvanecidos del carrusel */
+.marquee-borroso {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marquee-fila {
     animation: none;
+  }
+
+  /* Sin animación, el carrusel se navega con scroll manual */
+  .marquee-borroso {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }
 

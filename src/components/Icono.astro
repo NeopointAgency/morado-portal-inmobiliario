@@ -1,0 +1,58 @@
+---
+/**
+ * Iconos del sistema (Lucide, trazo 2px — combina con el diseño).
+ * Se importan como SVG crudo y se inyectan inline para heredar color.
+ */
+import cama from 'lucide-static/icons/bed-double.svg?raw';
+import bano from 'lucide-static/icons/bath.svg?raw';
+import auto from 'lucide-static/icons/car-front.svg?raw';
+import area from 'lucide-static/icons/ruler.svg?raw';
+import terreno from 'lucide-static/icons/land-plot.svg?raw';
+import antiguedad from 'lucide-static/icons/calendar-days.svg?raw';
+import alberca from 'lucide-static/icons/waves.svg?raw';
+import jardin from 'lucide-static/icons/flower-2.svg?raw';
+import seguridad from 'lucide-static/icons/shield-check.svg?raw';
+import gym from 'lucide-static/icons/dumbbell.svg?raw';
+import mascotas from 'lucide-static/icons/paw-print.svg?raw';
+import amueblado from 'lucide-static/icons/sofa.svg?raw';
+import terraza from 'lucide-static/icons/sun.svg?raw';
+import bodega from 'lucide-static/icons/warehouse.svg?raw';
+import cocina from 'lucide-static/icons/chef-hat.svg?raw';
+import club from 'lucide-static/icons/users.svg?raw';
+import wifi from 'lucide-static/icons/wifi.svg?raw';
+import check from 'lucide-static/icons/check.svg?raw';
+
+const iconos: Record<string, string> = {
+  cama,
+  bano,
+  auto,
+  area,
+  terreno,
+  antiguedad,
+  alberca,
+  jardin,
+  seguridad,
+  gym,
+  mascotas,
+  amueblado,
+  terraza,
+  bodega,
+  cocina,
+  club,
+  wifi,
+  check,
+};
+
+export type NombreIcono = keyof typeof iconos;
+
+interface Props {
+  nombre: string;
+  /** Clases del contenedor; controla el tamaño (default h-4 w-4) */
+  clase?: string;
+}
+
+const { nombre, clase = 'h-4 w-4' } = Astro.props;
+const svg = iconos[nombre] ?? iconos.check;
+---
+
+<span class={`inline-block shrink-0 [&>svg]:h-full [&>svg]:w-full ${clase}`} aria-hidden="true" set:html={svg} />

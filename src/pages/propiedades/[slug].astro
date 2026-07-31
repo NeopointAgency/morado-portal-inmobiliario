@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import FormularioLead from '../../components/FormularioLead.astro';
+import Icono from '../../components/Icono.astro';
+import { iconoAmenidad } from '../../lib/amenidades';
 import { propiedadPorSlug } from '../../lib/queries';
 import { assetUrl, PRESETS } from '../../lib/images';
 import { formatoPrecio, etiqueta } from '../../lib/format';
@@ -40,13 +42,14 @@ const galeria: GaleriaItem[] = Array.isArray(p.galeria)
   ? (p.galeria.filter((g): g is GaleriaItem => typeof g === 'object' && g !== null) as GaleriaItem[])
   : [];
 
-const caracteristicas: [string, string][] = [];
-if (p.recamaras) caracteristicas.push(['Recámaras', String(p.recamaras)]);
-if (p.banos) caracteristicas.push(['Baños', String(p.banos)]);
-if (p.estacionamientos) caracteristicas.push(['Estacionamientos', String(p.estacionamientos)]);
-if (p.m2_terreno) caracteristicas.push(['Terreno', `${p.m2_terreno} m²`]);
-if (p.m2_construccion) caracteristicas.push(['Construcción', `${p.m2_construccion} m²`]);
-if (p.antiguedad) caracteristicas.push(['Antigüedad', `${p.antiguedad} años`]);
+const caracteristicas: { icono: string; nombre: string; valor: string }[] = [];
+if (p.recamaras) caracteristicas.push({ icono: 'cama', nombre: 'Recámaras', valor: String(p.recamaras) });
+if (p.banos) caracteristicas.push({ icono: 'bano', nombre: 'Baños', valor: String(p.banos) });
+if (p.estacionamientos)
+  caracteristicas.push({ icono: 'auto', nombre: 'Estacionamientos', valor: String(p.estacionamientos) });
+if (p.m2_terreno) caracteristicas.push({ icono: 'terreno', nombre: 'Terreno', valor: `${p.m2_terreno} m²` });
+if (p.m2_construccion) caracteristicas.push({ icono: 'area', nombre: 'Construcción', valor: `${p.m2_construccion} m²` });
+if (p.antiguedad) caracteristicas.push({ icono: 'antiguedad', nombre: 'Antigüedad', valor: `${p.antiguedad} años` });
 
 const amenidades = Array.isArray(p.amenidades) ? p.amenidades : [];
 
@@ -136,10 +139,13 @@ const jsonLd = {
             <section class="mt-10">
               <h2 class="text-2xl">Características</h2>
               <ul class="mt-4 grid list-none grid-cols-2 gap-x-6 gap-y-3 p-0 sm:grid-cols-3">
-                {caracteristicas.map(([nombre, valor]) => (
-                  <li class="rounded-lg bg-morado-50 px-4 py-3">
-                    <span class="block text-xs text-morado-950/50 uppercase">{nombre}</span>
-                    <span class="font-medium">{valor}</span>
+                {caracteristicas.map((c) => (
+                  <li class="flex items-center gap-3 rounded-lg bg-morado-50 px-4 py-3">
+                    <Icono nombre={c.icono} clase="h-5 w-5 text-morado-600" />
+                    <span>
+                      <span class="block text-xs text-morado-950/50 uppercase">{c.nombre}</span>
+                      <span class="font-medium">{c.valor}</span>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -153,7 +159,10 @@ const jsonLd = {
               <h2 class="text-2xl">Amenidades</h2>
               <ul class="mt-4 flex list-none flex-wrap gap-2 p-0">
                 {amenidades.map((a) => (
-                  <li class="rounded-full bg-morado-100 px-4 py-1.5 text-sm">{a}</li>
+                  <li class="flex items-center gap-2 rounded-full bg-morado-100 px-4 py-1.5 text-sm">
+                    <Icono nombre={iconoAmenidad(a)} clase="h-4 w-4 text-morado-600" />
+                    {a}
+                  </li>
                 ))}
               </ul>
             </section>

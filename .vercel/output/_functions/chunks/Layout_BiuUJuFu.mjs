@@ -1,12 +1,12 @@
-import { _ as addAttribute, c as renderSlot, d as renderTemplate, g as renderHead, h as maybeRenderHead, i as renderComponent, w as createAstro } from "./server_90Bxd0vG.mjs";
-import { t as createComponent } from "./compiler_CQrhOVPY.mjs";
+import { T as createAstro, _ as addAttribute, c as renderSlot, d as renderTemplate, g as renderHead, h as maybeRenderHead, i as renderComponent } from "./server_Dg-2fS8-.mjs";
+import { t as createComponent } from "./compiler_DPULFsOY.mjs";
 //#region src/components/Marca.astro
 createAstro("https://astro.build");
 var $$Marca = createComponent(($$result, $$props, $$slots) => {
 	const Astro = $$result.createAstro($$props, $$slots);
 	Astro.self = $$Marca;
 	const { clase = "" } = Astro.props;
-	return renderTemplate`${maybeRenderHead($$result)}<a href="/"${addAttribute(`inline-block leading-none no-underline ${clase}`, "class")}><span class="font-display text-2xl tracking-wide">MORADO</span><span class="mt-1 block text-[0.6rem] font-medium tracking-[0.45em] uppercase opacity-80">Bienes Raíces</span></a>`;
+	return renderTemplate`${maybeRenderHead($$result)}<a href="/"${addAttribute(`inline-block no-underline ${clase}`, "class")}><img src="/images/logo.png" alt="Morado Bienes Raíces" width="208" height="68" class="h-12 w-auto sm:h-14"></a>`;
 }, "/Users/edgarortega/morado-portal-inmobiliario/src/components/Marca.astro", void 0);
 //#endregion
 //#region src/components/Header.astro
@@ -31,7 +31,7 @@ var $$Header = createComponent(($$result, $$props, $$slots) => {
 		}
 	];
 	const activo = (href) => href !== "/" && href.startsWith("/") && !href.includes("#") && (ruta === href || ruta.startsWith(href + "/")) ? "page" : href === "/" && ruta === "/" ? "page" : void 0;
-	return renderTemplate`${maybeRenderHead($$result)}<header${addAttribute(["text-white", sobrepuesto ? "absolute inset-x-0 top-0 z-30 bg-transparent" : "bg-morado-950"], "class:list")}><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">${renderComponent($$result, "Marca", $$Marca, { "clase": "text-white" })}<nav aria-label="Navegación principal" class="flex items-center gap-x-5 gap-y-2 sm:gap-x-7"><ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:gap-x-7 sm:text-base">${enlaces.map((e) => renderTemplate`<li><a${addAttribute(e.href, "href")}${addAttribute(activo(e.href), "aria-current")} class="text-white/80 no-underline transition-colors hover:text-white aria-[current=page]:text-white aria-[current=page]:underline aria-[current=page]:underline-offset-8">${e.texto}</a></li>`)}</ul><a href="/contacto" class="hidden rounded-full border border-white/40 px-5 py-2 text-sm font-medium text-white no-underline transition-colors hover:border-white hover:bg-white/10 sm:inline-flex">Contáctanos</a></nav></div></header>`;
+	return renderTemplate`${maybeRenderHead($$result)}<header${addAttribute(["text-white", sobrepuesto ? "absolute inset-x-0 top-0 z-30 bg-transparent" : "bg-morado-950"], "class:list")}><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">${renderComponent($$result, "Marca", $$Marca, { "clase": "text-white" })}<nav aria-label="Navegación principal" class="flex items-center gap-x-5 gap-y-2 sm:gap-x-7"><ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm tracking-[-0.05em] sm:gap-x-7 sm:text-base">${enlaces.map((e) => renderTemplate`<li><a${addAttribute(e.href, "href")}${addAttribute(activo(e.href), "aria-current")} class="text-white/80 no-underline transition-colors hover:text-white aria-[current=page]:text-white aria-[current=page]:underline aria-[current=page]:underline-offset-8">${e.texto}</a></li>`)}</ul><a href="/contacto" class="hidden rounded-full border border-white/40 px-5 py-2 text-sm font-medium tracking-[-0.05em] text-white no-underline transition-colors hover:border-white hover:bg-white/10 sm:inline-flex">Contáctanos</a></nav></div></header>`;
 }, "/Users/edgarortega/morado-portal-inmobiliario/src/components/Header.astro", void 0);
 //#endregion
 //#region src/components/Footer.astro

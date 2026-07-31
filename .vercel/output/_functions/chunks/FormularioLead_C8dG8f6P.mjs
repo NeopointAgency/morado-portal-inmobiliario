@@ -1,5 +1,5 @@
-import { _ as addAttribute, d as renderTemplate, h as maybeRenderHead, w as createAstro } from "./server_90Bxd0vG.mjs";
-import { t as createComponent } from "./compiler_CQrhOVPY.mjs";
+import { T as createAstro, _ as addAttribute, d as renderTemplate, h as maybeRenderHead } from "./server_Dg-2fS8-.mjs";
+import { t as createComponent } from "./compiler_DPULFsOY.mjs";
 //#region src/components/FormularioLead.astro
 createAstro("https://astro.build");
 var $$FormularioLead = createComponent(($$result, $$props, $$slots) => {

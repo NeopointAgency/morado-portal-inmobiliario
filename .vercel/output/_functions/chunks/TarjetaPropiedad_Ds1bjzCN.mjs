@@ -1,5 +1,5 @@
-import { _ as addAttribute, d as renderTemplate, h as maybeRenderHead, w as createAstro } from "./server_90Bxd0vG.mjs";
-import { t as createComponent } from "./compiler_CQrhOVPY.mjs";
+import { T as createAstro, _ as addAttribute, d as renderTemplate, h as maybeRenderHead } from "./server_Dg-2fS8-.mjs";
+import { t as createComponent } from "./compiler_DPULFsOY.mjs";
 import { n as assetUrl, t as PRESETS } from "./images_CGQAYpRQ.mjs";
 import { n as formatoPrecio, t as etiqueta } from "./format_DkXTey0E.mjs";
 //#region src/components/TarjetaPropiedad.astro

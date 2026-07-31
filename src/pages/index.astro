@@ -400,6 +400,16 @@ const jsonLd = {
 
   gsap.registerPlugin(ScrollTrigger, SplitText);
 
+  // Los marquees solo corren cuando están en pantalla: fuera del
+  // viewport se pausan y el scroll no paga su composición.
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      for (const e of entradas) e.target.classList.toggle('marquee-dormido', !e.isIntersecting);
+    },
+    { rootMargin: '100px' }
+  );
+  document.querySelectorAll('.marquee-fila').forEach((fila) => observador.observe(fila));
+
   // Todas las animaciones viven dentro de matchMedia: con
   // prefers-reduced-motion la página queda estática y completa.
   const mm = gsap.matchMedia();

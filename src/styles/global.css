@@ -98,6 +98,12 @@
   animation-play-state: paused;
 }
 
+/* Fuera del viewport no hay nada que animar (lo controla un
+   IntersectionObserver): el scroll no paga marquees invisibles */
+.marquee-dormido {
+  animation-play-state: paused !important;
+}
+
 /* El héroe sticky ya quedó cubierto por el contenido: se apaga para
    no seguir pagando blur + marquees en cada frame del scroll */
 .heroe-apagado {

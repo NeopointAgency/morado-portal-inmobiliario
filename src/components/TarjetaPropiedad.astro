@@ -26,7 +26,7 @@ else if (p.m2_terreno)
 ---
 
 <article
-  class="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-morado-950/5 transition-shadow hover:shadow-lg"
+  class="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-morado-950/5 transition-transform duration-300 hover:-translate-y-1"
 >
   <div class="relative">
     {
@@ -38,7 +38,7 @@ else if (p.m2_terreno)
           height={PRESETS.thumb.height}
           loading={prioridad ? 'eager' : 'lazy'}
           decoding="async"
-          class="aspect-[3/2] w-full bg-morado-100 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          class="aspect-[3/2] w-full bg-morado-100 object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
       ) : (
         <div class="aspect-[3/2] w-full bg-morado-100" />

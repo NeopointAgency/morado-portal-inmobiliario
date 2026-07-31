@@ -161,6 +161,13 @@
   }
 }
 
+/* Secciones bajo el fold: el navegador no las renderiza hasta que el
+   scroll se acerca — destacadas no paga el costo de lo que viene abajo */
+.seccion-diferida {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
 /* Honeypot: fuera de vista para humanos, presente para bots */
 .campo-alterno {
   position: absolute !important;

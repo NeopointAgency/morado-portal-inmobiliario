@@ -455,13 +455,16 @@ const jsonLd = {
     document.fonts.ready.then(entrada);
 
     // ---- Velo de scroll: oscurece y desenfoca el héroe fijo ----
+    // La sección siguiente se encima -2rem sobre el héroe, así que en
+    // reposo su top ya está dentro del viewport: el start va en 90%
+    // para que el velo empiece en cero y entre ya avanzado el scroll.
     gsap.to('#velo-scroll', {
       '--blur': '14px',
       backgroundColor: 'rgba(33, 16, 54, 0.65)',
       ease: 'none',
       scrollTrigger: {
         trigger: '#despues-heroe',
-        start: 'top bottom',
+        start: 'top 90%',
         end: 'top 25%',
         scrub: true,
       },
@@ -474,7 +477,7 @@ const jsonLd = {
       ease: 'none',
       scrollTrigger: {
         trigger: '#despues-heroe',
-        start: 'top bottom',
+        start: 'top 90%',
         end: 'top 25%',
         scrub: true,
       },

@@ -6,7 +6,7 @@ import { iconoAmenidad } from '../../lib/amenidades';
 import { propiedadPorSlug } from '../../lib/queries';
 import { assetUrl, PRESETS } from '../../lib/images';
 import { formatoPrecio, etiqueta } from '../../lib/format';
-import { whatsappUrl } from '../../lib/whatsapp';
+import { whatsappUrl, whatsappUrlMensaje } from '../../lib/whatsapp';
 import type { Asesor, GaleriaItem } from '../../lib/types';
 
 export const prerender = false;
@@ -52,6 +52,70 @@ if (p.m2_construccion) caracteristicas.push({ icono: 'area', nombre: 'Construcci
 if (p.antiguedad) caracteristicas.push({ icono: 'antiguedad', nombre: 'Antigüedad', valor: `${p.antiguedad} años` });
 
 const amenidades = Array.isArray(p.amenidades) ? p.amenidades : [];
+
+// ---- Sección "Por qué con Morado": resuelve las objeciones reales del
+// cliente (voz del cliente) en el contexto de ESTA propiedad. ----
+const esRenta = p.operacion === 'renta';
+const nombreAsesor = asesor?.nombre.split(' ')[0] ?? 'Tu asesor';
+
+const objeciones = esRenta
+  ? [
+      {
+        icono: 'papeles',
+        objecion: '“¿Y si quien renta ni siquiera es el dueño?”',
+        respuesta:
+          'Antes de publicar verificamos la propiedad y a quien la ofrece. Guanajuato está entre los 5 estados con más quejas por fraude inmobiliario según PROFECO — por eso aquí nada se publica sin revisión.',
+      },
+      {
+        icono: 'credito',
+        objecion: '“Los contratos siempre traen letras chicas”',
+        respuesta:
+          'Contrato claro desde el día uno: renta, depósito, mantenimiento y condiciones por escrito. Lo lees completo antes de firmar, sin sorpresas.',
+      },
+      {
+        icono: 'precio',
+        objecion: '“El precio cambia cuando ya me interesé”',
+        respuesta:
+          'La renta publicada es la renta real, y los metros, recámaras y zona están verificados. Lo que ves es lo que hay.',
+      },
+      {
+        icono: 'asesoria',
+        objecion: '“Los asesores solo quieren cerrar rápido”',
+        respuesta: `${nombreAsesor} te va a decir también lo que esta propiedad no tiene. Respuesta rápida y sin presión: preferimos que rentes bien a que rentes rápido.`,
+      },
+    ]
+  : [
+      {
+        icono: 'papeles',
+        objecion: '“¿Y si doy el enganche y el terreno no está regularizado?”',
+        respuesta:
+          'Revisamos escrituras y estado legal antes de publicar. Guanajuato está entre los 5 estados con más quejas por fraude inmobiliario según PROFECO — el miedo es real, y por eso aquí nada se publica sin expediente.',
+      },
+      {
+        icono: 'credito',
+        objecion: '“Dicen que acepta INFONAVIT y luego no es cierto”',
+        respuesta:
+          'Los créditos que esta propiedad acepta ya están confirmados — INFONAVIT, FOVISSSTE o bancario. Si dice que sí, es que sí; no cuando ya estás emocionado.',
+      },
+      {
+        icono: 'precio',
+        objecion: '“El precio cambia cuando ya me interesé en serio”',
+        respuesta:
+          'El precio publicado es el precio real, y los metros, recámaras y zona están verificados. Sin letra chica.',
+      },
+      {
+        icono: 'asesoria',
+        objecion: '“Los asesores venden lo que más comisión les deja”',
+        respuesta: `${nombreAsesor} te va a decir también lo que esta propiedad no tiene. Respuesta rápida y sin presión: preferimos que compres bien a que compres rápido.`,
+      },
+    ];
+
+const urlInversion = asesor
+  ? whatsappUrlMensaje(
+      asesor.whatsapp,
+      `Hola ${nombreAsesor}, me interesa ${p.titulo} como inversión. ¿Me compartes los números de la zona? — ${urlFicha}`
+    )
+  : null;
 
 // JSON-LD RealEstateListing para buscadores
 const jsonLd = {
@@ -119,10 +183,22 @@ const jsonLd = {
         }
 
         <header class="mt-6">
-          <p class="text-sm font-medium tracking-wide text-morado-700 uppercase">
-            {p.operacion === 'venta' ? 'En venta' : 'En renta'} · {etiqueta(p.tipo)}
-            {p.estatus === 'apartada' && ' · Apartada'}
-          </p>
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <p class="text-sm font-medium tracking-wide text-morado-700 uppercase">
+              {p.operacion === 'venta' ? 'En venta' : 'En renta'} · {etiqueta(p.tipo)}
+              {p.estatus === 'apartada' && ' · Apartada'}
+            </p>
+            <button
+              type="button"
+              id="boton-compartir"
+              data-titulo={p.titulo}
+              data-url={urlFicha}
+              class="flex items-center gap-2 rounded-full border border-morado-200 px-4 py-1.5 text-sm font-medium text-morado-950 transition-colors hover:border-morado-600 hover:bg-morado-50"
+            >
+              <Icono nombre="compartir" clase="h-4 w-4 text-morado-600" />
+              <span id="boton-compartir-texto">Compartir</span>
+            </button>
+          </div>
           <h1 class="mt-1 text-3xl sm:text-4xl">{p.titulo}</h1>
           {ubicacion && <p class="mt-1 text-morado-950/60">{ubicacion}</p>}
           {p.mostrar_direccion_exacta && p.direccion && <p class="text-morado-950/60">{p.direccion}</p>}
@@ -274,6 +350,83 @@ const jsonLd = {
     </div>
   </div>
 
+  <!-- Barra fija móvil: el camino a WhatsApp siempre a un toque -->
+  {
+    asesor && !noDisponible && (
+      <div
+        class="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-morado-950/10 bg-white/95 px-4 py-3 backdrop-blur-sm lg:hidden"
+        style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));"
+      >
+        <div class="min-w-0">
+          <p class="truncate text-lg leading-tight font-semibold">{formatoPrecio(p.precio, p.moneda, p.operacion)}</p>
+          <p class="truncate text-xs text-morado-950/60">Te atiende {asesor.nombre.split(' ')[0]}</p>
+        </div>
+        <a href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)} class="boton-oscuro shrink-0 px-5 py-2.5 text-sm">
+          Enviar WhatsApp
+        </a>
+      </div>
+    )
+  }
+
+  <!-- ============ POR QUÉ CON MORADO: objeciones resueltas ============ -->
+  <section class="mt-16 bg-morado-950 text-white" aria-labelledby="titulo-morado">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
+      <p class="text-xs font-semibold tracking-[0.25em] text-morado-300 uppercase">Por qué con Morado</p>
+      <h2 id="titulo-morado" class="mt-3 max-w-3xl text-3xl leading-snug sm:text-4xl">
+        {esRenta ? 'Réntala tranquilo: lo que te preocupa, ya lo resolvimos.' : 'Enamórate tranquilo: lo que te preocupa, ya lo resolvimos.'}
+      </h2>
+      <p class="mt-4 max-w-2xl text-white/70">
+        Sabemos lo que se siente {esRenta ? 'rentar' : 'comprar'} — porque estas dudas las hemos escuchado cientos de
+        veces. Esto es lo que Morado ya revisó por ti en esta propiedad:
+      </p>
+
+      <ul class="mt-10 grid list-none gap-5 p-0 md:grid-cols-2">
+        {
+          objeciones.map((o) => (
+            <li class="rounded-xl border border-morado-700 bg-morado-900 p-7">
+              <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-morado-500">
+                  <Icono nombre={o.icono} clase="h-5 w-5 text-morado-200" />
+                </span>
+                <h3 class="font-sans text-base font-semibold text-morado-100">{o.objecion}</h3>
+              </div>
+              <p class="mt-4 text-sm leading-relaxed text-white/75">{o.respuesta}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        !esRenta && urlInversion && (
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-6 rounded-xl border border-morado-700 bg-gradient-to-r from-morado-900 to-morado-800 p-7">
+            <div class="flex items-start gap-4">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-morado-500">
+                <Icono nombre="inversion" clase="h-5 w-5 text-morado-200" />
+              </span>
+              <div class="max-w-xl">
+                <h3 class="font-sans text-base font-semibold text-morado-100">¿La ves como inversión?</h3>
+                <p class="mt-2 text-sm leading-relaxed text-white/75">
+                  Hablemos de cifras, no de sueños. Un inmueble bien elegido en México rinde entre 6% y 12% anual — el
+                  número exacto de esta zona (demanda real de renta, meses vacíos, mantenimiento) te lo da{' '}
+                  {nombreAsesor} con datos.
+                </p>
+              </div>
+            </div>
+            <a href={urlInversion} class="boton-claro shrink-0">
+              Pedir los números de la zona
+            </a>
+          </div>
+        )
+      }
+
+      <p class="mt-10 text-center text-sm text-white/60">
+        Asesores certificados CONOCER-SEP&ensp;·&ensp;Miembro AMPI&ensp;·&ensp;+30 años de experiencia
+      </p>
+    </div>
+    <!-- Colchón para que la barra fija móvil no tape el final de la página -->
+    <div class="h-20 lg:hidden" aria-hidden="true"></div>
+  </section>
+
   <!-- Lightbox de la galería: <dialog> nativo (Esc y foco atrapado gratis) -->
   <dialog
     id="lightbox"
@@ -353,5 +506,34 @@ const jsonLd = {
     dialogo.addEventListener('click', (e) => {
       if (e.target === dialogo || e.target === document.getElementById('lightbox-marco')) dialogo.close();
     });
+
+    // Swipe horizontal en táctil para navegar
+    let inicioX = 0;
+    dialogo.addEventListener('pointerdown', (e) => (inicioX = e.clientX));
+    dialogo.addEventListener('pointerup', (e) => {
+      const delta = e.clientX - inicioX;
+      if (Math.abs(delta) > 48) mostrar(delta > 0 ? indice - 1 : indice + 1);
+    });
   }
+
+  // ---- Compartir: hoja nativa del sistema; si no hay, copia el enlace ----
+  const botonCompartir = document.getElementById('boton-compartir');
+  const textoCompartir = document.getElementById('boton-compartir-texto');
+  botonCompartir?.addEventListener('click', async () => {
+    const titulo = botonCompartir.dataset.titulo ?? document.title;
+    const url = botonCompartir.dataset.url ?? location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: titulo, text: `Mira esta propiedad: ${titulo}`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        if (textoCompartir) {
+          textoCompartir.textContent = 'Enlace copiado';
+          setTimeout(() => (textoCompartir.textContent = 'Compartir'), 2000);
+        }
+      }
+    } catch {
+      /* el usuario canceló la hoja de compartir: no es un error */
+    }
+  });
 </script>

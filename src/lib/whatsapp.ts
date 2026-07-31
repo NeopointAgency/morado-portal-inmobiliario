@@ -2,6 +2,12 @@
  * URL de wa.me con mensaje prellenado. El asesor sabe de qué propiedad
  * le hablan sin preguntar.
  */
+/** URL de wa.me con un mensaje libre ya redactado. */
+export function whatsappUrlMensaje(numero: string, mensaje: string): string {
+  const limpio = numero.replace(/[^0-9]/g, '');
+  return `https://wa.me/${limpio}?text=${encodeURIComponent(mensaje)}`;
+}
+
 export function whatsappUrl(numero: string, titulo?: string, urlFicha?: string): string {
   // El número debe venir en E.164 sin signos (5214611234567); se limpia por si acaso.
   const limpio = numero.replace(/[^0-9]/g, '');

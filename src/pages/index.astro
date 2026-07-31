@@ -148,6 +148,8 @@ const jsonLd = {
               {[...filaSuperior, ...filaSuperior].map((p) => (
                 <img
                   src={assetUrl(p.imagen_principal!, 'card')}
+                  srcset={`${assetUrl(p.imagen_principal!, 'thumb')} 600w, ${assetUrl(p.imagen_principal!, 'card')} 800w`}
+                  sizes="(min-width: 640px) 51vh, 46vh"
                   alt=""
                   width="800"
                   height="600"
@@ -161,6 +163,8 @@ const jsonLd = {
               {[...filaInferior, ...filaInferior].map((p) => (
                 <img
                   src={assetUrl(p.imagen_principal!, 'card')}
+                  srcset={`${assetUrl(p.imagen_principal!, 'thumb')} 600w, ${assetUrl(p.imagen_principal!, 'card')} 800w`}
+                  sizes="(min-width: 640px) 51vh, 46vh"
                   alt=""
                   width="800"
                   height="600"
@@ -178,8 +182,8 @@ const jsonLd = {
       <div class="absolute inset-0 bg-gradient-to-t from-morado-950 via-morado-950/70 to-morado-950/40" aria-hidden="true">
       </div>
 
-      <div id="heroe-contenido" class="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20">
-        <div class="grid items-end gap-10 lg:grid-cols-[1.4fr_auto]">
+      <div id="heroe-contenido" class="relative z-10 mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 sm:pb-20">
+        <div class="grid items-end gap-7 lg:grid-cols-[1.4fr_auto] lg:gap-10">
           <div class="max-w-2xl">
             <span
               data-heroe="badge"
@@ -474,8 +478,10 @@ const jsonLd = {
     // La sección siguiente se encima -2rem sobre el héroe, así que en
     // reposo su top ya está dentro del viewport: el start va en 90%
     // para que el velo empiece en cero y entre ya avanzado el scroll.
+    // En pantallas chicas el blur cuesta caro: se baja a la mitad.
+    const esMovil = window.matchMedia('(max-width: 639px)').matches;
     gsap.to('#velo-scroll', {
-      '--blur': '14px',
+      '--blur': esMovil ? '7px' : '14px',
       backgroundColor: 'rgba(33, 16, 54, 0.65)',
       ease: 'none',
       scrollTrigger: {

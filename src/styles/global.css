@@ -98,6 +98,15 @@
   animation-play-state: paused;
 }
 
+/* El héroe sticky ya quedó cubierto por el contenido: se apaga para
+   no seguir pagando blur + marquees en cada frame del scroll */
+.heroe-apagado {
+  visibility: hidden;
+}
+.heroe-apagado .marquee-fila {
+  animation-play-state: paused;
+}
+
 /* Bordes desvanecidos del carrusel */
 .marquee-borroso {
   overflow: hidden;

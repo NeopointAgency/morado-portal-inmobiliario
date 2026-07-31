@@ -447,6 +447,10 @@ const jsonLd = {
           // Con scroll en cero, invisible garantizado (quirks de WebKit
           // con backdrop-filter aparte de la opacidad)
           if (velo) velo.style.visibility = self.progress === 0 ? 'hidden' : 'visible';
+          // Y con el héroe ya cubierto, se apaga entero: sin esto el
+          // navegador sigue componiendo marquees + blur detrás del
+          // contenido durante todo el scroll (lag en destacadas)
+          document.getElementById('heroe')?.classList.toggle('heroe-apagado', self.progress === 1);
         },
       },
     });

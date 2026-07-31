@@ -27,6 +27,10 @@ import precio from 'lucide-static/icons/tag.svg?raw';
 import asesoria from 'lucide-static/icons/handshake.svg?raw';
 import inversion from 'lucide-static/icons/trending-up.svg?raw';
 import compartir from 'lucide-static/icons/share-2.svg?raw';
+import whatsappRaw from 'simple-icons/icons/whatsapp.svg?raw';
+
+// Simple Icons no trae fill: se inyecta para que herede el color del texto
+const whatsapp = whatsappRaw.replace('<svg', '<svg fill="currentColor"');
 
 const iconos: Record<string, string> = {
   cama,
@@ -53,6 +57,7 @@ const iconos: Record<string, string> = {
   asesoria,
   inversion,
   compartir,
+  whatsapp,
 };
 
 export type NombreIcono = keyof typeof iconos;

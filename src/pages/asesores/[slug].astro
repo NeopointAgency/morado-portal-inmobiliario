@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import TarjetaPropiedad from '../../components/TarjetaPropiedad.astro';
+import Icono from '../../components/Icono.astro';
 import { asesoresActivos, propiedadesDeAsesor } from '../../lib/queries';
 import { assetUrl } from '../../lib/images';
 import { slugify } from '../../lib/format';
@@ -76,7 +77,10 @@ const jsonLd = {
           {asesor.puesto && <p class="mt-1 text-white/70">{asesor.puesto}</p>}
           {asesor.bio && <p class="mt-3 max-w-xl text-white/80">{asesor.bio}</p>}
           <p class="mt-5 flex flex-wrap gap-3">
-            <a class="boton-claro" href={whatsappUrl(asesor.whatsapp)}>Enviar WhatsApp</a>
+            <a class="boton-claro" href={whatsappUrl(asesor.whatsapp)}>
+              <Icono nombre="whatsapp" clase="h-4.5 w-4.5 text-whatsapp" />
+              Enviar WhatsApp
+            </a>
             {
               asesor.telefono && (
                 <a

@@ -328,6 +328,7 @@ const jsonLd = {
               {!noDisponible && (
                 <>
                   <a class="boton-oscuro mt-5 w-full" href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)}>
+                    <Icono nombre="whatsapp" clase="h-4.5 w-4.5 text-whatsapp" />
                     Enviar WhatsApp
                   </a>
                   <p class="my-4 text-center text-sm text-morado-950/50">o déjanos tus datos:</p>
@@ -362,6 +363,7 @@ const jsonLd = {
           <p class="truncate text-xs text-morado-950/60">Te atiende {asesor.nombre.split(' ')[0]}</p>
         </div>
         <a href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)} class="boton-oscuro shrink-0 px-5 py-2.5 text-sm">
+          <Icono nombre="whatsapp" clase="h-4 w-4 text-whatsapp" />
           Enviar WhatsApp
         </a>
       </div>

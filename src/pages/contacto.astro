@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import FormularioLead from '../components/FormularioLead.astro';
+import Icono from '../components/Icono.astro';
 import { configuracionSitio } from '../lib/queries';
 import { whatsappUrl } from '../lib/whatsapp';
 
@@ -32,6 +33,7 @@ const config = await configuracionSitio();
         {
           config?.whatsapp_general && (
             <a class="boton-oscuro w-full" href={whatsappUrl(config.whatsapp_general)}>
+              <Icono nombre="whatsapp" clase="h-4.5 w-4.5 text-whatsapp" />
               Enviar WhatsApp
             </a>
           )

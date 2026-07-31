@@ -99,15 +99,22 @@ const jsonLd = {
       <article>
         {
           p.imagen_principal && (
-            <img
-              src={assetUrl(p.imagen_principal, 'hero')}
-              alt={`Fotografía principal de ${p.titulo}`}
-              width={PRESETS.hero.width}
-              height={PRESETS.hero.height}
-              loading="eager"
-              fetchpriority="high"
-              class="aspect-[16/10] w-full rounded-xl bg-morado-100 object-cover"
-            />
+            <a
+              href={assetUrl(p.imagen_principal, 'galeria')}
+              class="js-lightbox block cursor-zoom-in"
+              data-alt={`Fotografía principal de ${p.titulo}`}
+              aria-label={`Ver fotografía principal de ${p.titulo} en grande`}
+            >
+              <img
+                src={assetUrl(p.imagen_principal, 'hero')}
+                alt={`Fotografía principal de ${p.titulo}`}
+                width={PRESETS.hero.width}
+                height={PRESETS.hero.height}
+                loading="eager"
+                fetchpriority="high"
+                class="aspect-[16/10] w-full rounded-xl bg-morado-100 object-cover"
+              />
+            </a>
           )
         }
 
@@ -198,15 +205,22 @@ const jsonLd = {
               <ul class="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2">
                 {galeria.map((g, i) => (
                   <li>
-                    <img
-                      src={assetUrl(g.directus_files_id, 'galeria')}
-                      alt={`Fotografía ${i + 2} de ${p.titulo}`}
-                      width={PRESETS.galeria.width}
-                      height={PRESETS.galeria.height}
-                      loading="lazy"
-                      decoding="async"
-                      class="w-full rounded-xl bg-morado-100 object-cover"
-                    />
+                    <a
+                      href={assetUrl(g.directus_files_id, 'galeria')}
+                      class="js-lightbox block cursor-zoom-in overflow-hidden rounded-xl"
+                      data-alt={`Fotografía ${i + 2} de ${p.titulo}`}
+                      aria-label={`Ver fotografía ${i + 2} de ${p.titulo} en grande`}
+                    >
+                      <img
+                        src={assetUrl(g.directus_files_id, 'galeria')}
+                        alt={`Fotografía ${i + 2} de ${p.titulo}`}
+                        width={PRESETS.galeria.width}
+                        height={PRESETS.galeria.height}
+                        loading="lazy"
+                        decoding="async"
+                        class="w-full bg-morado-100 object-cover transition-transform duration-300 hover:scale-[1.02]"
+                      />
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -259,4 +273,85 @@ const jsonLd = {
       </aside>
     </div>
   </div>
+
+  <!-- Lightbox de la galería: <dialog> nativo (Esc y foco atrapado gratis) -->
+  <dialog
+    id="lightbox"
+    class="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-morado-950/90 backdrop:backdrop-blur-md"
+    aria-label={`Galería de ${p.titulo}`}
+  >
+    <div class="flex h-svh w-svw flex-col items-center justify-center gap-4 p-4" id="lightbox-marco">
+      <img id="lightbox-img" src="" alt="" class="max-h-[80svh] max-w-[92svw] rounded-xl object-contain" />
+      <div class="flex items-center gap-4">
+        <button
+          type="button"
+          id="lightbox-prev"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 text-xl text-white transition-colors hover:bg-white/10"
+          aria-label="Fotografía anterior"
+        >
+          ←
+        </button>
+        <span id="lightbox-contador" class="min-w-16 text-center text-sm text-white/80" aria-live="polite"></span>
+        <button
+          type="button"
+          id="lightbox-next"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 text-xl text-white transition-colors hover:bg-white/10"
+          aria-label="Fotografía siguiente"
+        >
+          →
+        </button>
+        <button
+          type="button"
+          id="lightbox-cerrar"
+          class="ml-4 flex h-11 items-center justify-center rounded-full border border-white/30 px-5 text-sm text-white transition-colors hover:bg-white/10"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </dialog>
 </Layout>
+
+<script>
+  const dialogo = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const imagen = document.getElementById('lightbox-img') as HTMLImageElement | null;
+  const contador = document.getElementById('lightbox-contador');
+  const enlaces = [...document.querySelectorAll<HTMLAnchorElement>('.js-lightbox')];
+
+  if (dialogo && imagen && contador && enlaces.length > 0) {
+    let indice = 0;
+
+    const mostrar = (i: number) => {
+      indice = (i + enlaces.length) % enlaces.length;
+      imagen.src = enlaces[indice].href;
+      imagen.alt = enlaces[indice].dataset.alt ?? '';
+      contador.textContent = `${indice + 1} / ${enlaces.length}`;
+      // Precargar vecinas para que prev/next se sientan instantáneos
+      for (const v of [indice + 1, indice - 1]) {
+        new Image().src = enlaces[(v + enlaces.length) % enlaces.length].href;
+      }
+    };
+
+    enlaces.forEach((enlace, i) => {
+      enlace.addEventListener('click', (e) => {
+        e.preventDefault();
+        mostrar(i);
+        dialogo.showModal();
+      });
+    });
+
+    document.getElementById('lightbox-prev')?.addEventListener('click', () => mostrar(indice - 1));
+    document.getElementById('lightbox-next')?.addEventListener('click', () => mostrar(indice + 1));
+    document.getElementById('lightbox-cerrar')?.addEventListener('click', () => dialogo.close());
+
+    dialogo.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') mostrar(indice - 1);
+      if (e.key === 'ArrowRight') mostrar(indice + 1);
+    });
+
+    // Clic fuera de la imagen (en el fondo) cierra
+    dialogo.addEventListener('click', (e) => {
+      if (e.target === dialogo || e.target === document.getElementById('lightbox-marco')) dialogo.close();
+    });
+  }
+</script>

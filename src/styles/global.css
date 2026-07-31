@@ -87,6 +87,8 @@
   gap: 1rem;
   width: max-content;
   animation: marquee var(--marquee-duracion, 70s) linear infinite;
+  /* Capa propia en GPU: el marquee se compone sin repintar la página */
+  will-change: transform;
 }
 
 .marquee-invertido {
@@ -113,11 +115,34 @@
   animation-play-state: paused;
 }
 
-/* Bordes desvanecidos del carrusel */
+/* Bordes desvanecidos del carrusel. Antes era mask-image, pero la
+   máscara sobre un track animado rompe la composición en GPU (lag al
+   hacer scroll): ahora son degradados encimados, puro composite. */
 .marquee-borroso {
   overflow: hidden;
-  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  position: relative;
+  --desvanecido: #ffffff;
+}
+
+.marquee-borroso::before,
+.marquee-borroso::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(2rem, 6vw, 5rem);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.marquee-borroso::before {
+  left: 0;
+  background: linear-gradient(to right, var(--desvanecido), transparent);
+}
+
+.marquee-borroso::after {
+  right: 0;
+  background: linear-gradient(to left, var(--desvanecido), transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -128,8 +153,11 @@
   /* Sin animación, el carrusel se navega con scroll manual */
   .marquee-borroso {
     overflow-x: auto;
-    mask-image: none;
-    -webkit-mask-image: none;
+  }
+
+  .marquee-borroso::before,
+  .marquee-borroso::after {
+    display: none;
   }
 }
 

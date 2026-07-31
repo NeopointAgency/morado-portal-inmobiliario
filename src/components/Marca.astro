@@ -1,12 +1,15 @@
 ---
-/** Wordmark de Morado (hasta que llegue el logo definitivo al CMS) */
+/**
+ * Logo de Morado (versión blanca con dorado — para fondos morados).
+ * Vive en /public para no depender del CMS en el chrome del sitio;
+ * también está en configuracion_sitio.logo para uso del admin.
+ */
 interface Props {
   clase?: string;
 }
 const { clase = '' } = Astro.props;
 ---
 
-<a href="/" class={`inline-block leading-none no-underline ${clase}`}>
-  <span class="font-display text-2xl tracking-wide">MORADO</span>
-  <span class="mt-1 block text-[0.6rem] font-medium tracking-[0.45em] uppercase opacity-80">Bienes Raíces</span>
+<a href="/" class={`inline-block no-underline ${clase}`}>
+  <img src="/images/logo.png" alt="Morado Bienes Raíces" width="208" height="68" class="h-12 w-auto sm:h-14" />
 </a>

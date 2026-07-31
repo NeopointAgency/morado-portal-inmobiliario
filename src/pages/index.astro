@@ -46,19 +46,19 @@ const ciudades = [
     valor: 'celaya',
     nombre: 'Celaya',
     lema: 'Explorar hogares seguros',
-    clase: 'from-morado-800 to-morado-600',
+    imagen: '/images/ciudades/celaya.jpg',
   },
   {
     valor: 'san_miguel_de_allende',
     nombre: 'San Miguel de Allende',
     lema: 'Explorar hogares mágicos',
-    clase: 'from-morado-900 to-morado-700',
+    imagen: '/images/ciudades/sanmigueldeallende.jpg',
   },
   {
     valor: 'queretaro',
     nombre: 'Querétaro',
     lema: 'Explorar hogares funcionales',
-    clase: 'from-morado-950 to-morado-800',
+    imagen: '/images/ciudades/queretaro.jpg',
   },
 ];
 
@@ -200,10 +200,23 @@ const jsonLd = {
           ciudades.map((c) => (
             <a
               href={`/propiedades?ciudad=${c.valor}`}
-              class={`group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-xl bg-gradient-to-b ${c.clase} p-6 text-white no-underline sm:aspect-[3/4]`}
+              class="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-xl bg-morado-900 p-6 text-white no-underline sm:aspect-[3/4]"
             >
-              <span class="font-display text-2xl">{c.nombre}</span>
-              <span class="mt-1 text-sm text-white/75 transition-colors group-hover:text-white">
+              <img
+                src={c.imagen}
+                alt=""
+                width="1000"
+                height="1250"
+                loading="lazy"
+                decoding="async"
+                class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+              />
+              <span
+                class="absolute inset-0 bg-gradient-to-t from-morado-950/90 via-morado-950/35 to-morado-900/20 transition-colors group-hover:via-morado-950/45"
+                aria-hidden="true"
+              />
+              <span class="relative font-display text-2xl">{c.nombre}</span>
+              <span class="relative mt-1 text-sm text-white/80 transition-colors group-hover:text-white">
                 {c.lema} <span aria-hidden="true">→</span>
               </span>
             </a>

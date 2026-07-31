@@ -1,5 +1,7 @@
 ---
 import Marca from './Marca.astro';
+import menuIcono from 'lucide-static/icons/menu.svg?raw';
+import cerrarIcono from 'lucide-static/icons/x.svg?raw';
 
 interface Props {
   /** Flota transparente sobre el héroe del home */
@@ -23,15 +25,14 @@ const activo = (href: string) =>
 ---
 
 <header
-  class:list={[
-    'text-white',
-    sobrepuesto ? 'absolute inset-x-0 top-0 z-30 bg-transparent' : 'bg-morado-950',
-  ]}
+  class:list={['text-white', sobrepuesto ? 'absolute inset-x-0 top-0 z-30 bg-transparent' : 'bg-morado-950']}
 >
-  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5">
     <Marca clase="text-white" />
-    <nav aria-label="Navegación principal" class="flex items-center gap-x-5 gap-y-2 sm:gap-x-7">
-      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm tracking-[-0.05em] sm:gap-x-7 sm:text-base">
+
+    <!-- Navegación de escritorio -->
+    <nav aria-label="Navegación principal" class="hidden items-center gap-x-7 md:flex">
+      <ul class="flex items-center gap-x-7 tracking-[-0.05em]">
         {
           enlaces.map((e) => (
             <li>
@@ -48,10 +49,61 @@ const activo = (href: string) =>
       </ul>
       <a
         href="/contacto"
-        class="inline-flex rounded-full border border-white/40 px-4 py-1.5 text-sm font-medium tracking-[-0.05em] text-white no-underline transition-colors hover:border-white hover:bg-white/10 sm:px-5 sm:py-2"
+        class="inline-flex rounded-full border border-white/40 px-5 py-2 text-sm font-medium tracking-[-0.05em] text-white no-underline transition-colors hover:border-white hover:bg-white/10"
       >
         Contáctanos
       </a>
     </nav>
+
+    <!-- Botón de menú móvil -->
+    <button
+      type="button"
+      id="menu-boton"
+      class="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:bg-white/10 md:hidden [&>span>svg]:h-5 [&>span>svg]:w-5"
+      aria-expanded="false"
+      aria-controls="menu-movil"
+      aria-label="Abrir menú"
+    >
+      <span id="menu-icono-abrir" set:html={menuIcono} />
+      <span id="menu-icono-cerrar" hidden set:html={cerrarIcono} />
+    </button>
+  </div>
+
+  <!-- Panel móvil -->
+  <div id="menu-movil" hidden class="border-t border-white/10 bg-morado-950/95 backdrop-blur-md md:hidden">
+    <nav aria-label="Navegación principal móvil" class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+      <ul class="divide-y divide-white/10">
+        {
+          enlaces.map((e) => (
+            <li>
+              <a
+                href={e.href}
+                aria-current={activo(e.href)}
+                class="block py-3.5 text-lg text-white/85 no-underline transition-colors hover:text-white aria-[current=page]:font-semibold aria-[current=page]:text-white"
+              >
+                {e.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/contacto" class="boton-claro mt-4 mb-2 w-full">Contáctanos</a>
+    </nav>
   </div>
 </header>
+
+<script>
+  const boton = document.getElementById('menu-boton');
+  const panel = document.getElementById('menu-movil');
+  const iconoAbrir = document.getElementById('menu-icono-abrir');
+  const iconoCerrar = document.getElementById('menu-icono-cerrar');
+
+  boton?.addEventListener('click', () => {
+    const abierto = boton.getAttribute('aria-expanded') === 'true';
+    boton.setAttribute('aria-expanded', String(!abierto));
+    boton.setAttribute('aria-label', abierto ? 'Abrir menú' : 'Cerrar menú');
+    if (panel) panel.hidden = abierto;
+    if (iconoAbrir) iconoAbrir.hidden = !abierto;
+    if (iconoCerrar) iconoCerrar.hidden = abierto;
+  });
+</script>

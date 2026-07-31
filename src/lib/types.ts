@@ -97,7 +97,17 @@ export interface Lead {
   estatus: 'nuevo' | 'contactado' | 'descartado';
 }
 
+export interface Testimonio {
+  id: number;
+  texto: string;
+  autor: string;
+  estrellas: number;
+  activo: boolean;
+  sort: number | null;
+}
+
 export interface Schema {
+  testimonios: Testimonio[];
   asesores: Asesor[];
   propiedades: Propiedad[];
   configuracion_sitio: ConfiguracionSitio; // singleton

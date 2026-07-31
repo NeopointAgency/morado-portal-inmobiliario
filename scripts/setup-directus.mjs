@@ -364,6 +364,32 @@ await crearColeccion({
 await crearRelacion({ collection: 'leads', field: 'propiedad', related_collection: 'propiedades', schema: { on_delete: 'SET NULL' } });
 await crearRelacion({ collection: 'leads', field: 'asesor', related_collection: 'asesores', schema: { on_delete: 'SET NULL' } });
 
+// 4b. testimonios
+console.log('Colección testimonios');
+await crearColeccion({
+  collection: 'testimonios',
+  meta: {
+    icon: 'reviews',
+    note: 'Lo que dicen los clientes. Aparecen en el carrusel del home.',
+    display_template: '{{autor}}',
+    sort_field: 'sort',
+  },
+  schema: {},
+  fields: [
+    pkAuto,
+    { field: 'texto', type: 'text', meta: { interface: 'input-multiline', required: true, note: '1–2 frases, en la voz del cliente' } },
+    texto('autor', { required: true, note: 'Ej. "Fernanda G., Celaya"' }),
+    {
+      field: 'estrellas',
+      type: 'integer',
+      meta: { interface: 'select-dropdown', options: { choices: [5, 4, 3].map((n) => ({ text: `${n} estrellas`, value: n })) }, width: 'half' },
+      schema: { default_value: 5 },
+    },
+    toggle('activo', true, { width: 'half' }),
+    { field: 'sort', type: 'integer', meta: { hidden: true, interface: 'input' } },
+  ],
+});
+
 // 5. Presets de imagen (globales; se agregan sin pisar los existentes)
 console.log('Presets de imagen');
 const ajustes = await api('GET', '/settings');
@@ -432,6 +458,7 @@ if (!politicaFront._existia) {
     { collection: 'propiedades_files', action: 'read', fields: ['*'] },
     { collection: 'configuracion_sitio', action: 'read', fields: ['*'] },
     { collection: 'configuracion_sitio_propiedades', action: 'read', fields: ['*'] },
+    { collection: 'testimonios', action: 'read', fields: ['*'] },
     {
       collection: 'leads',
       action: 'create',
@@ -491,7 +518,7 @@ const politicaAdmin = await asegurar('/policies', 'admin_morado', {
   app_access: true,
 });
 if (!politicaAdmin._existia) {
-  const colecciones = ['asesores', 'propiedades', 'propiedades_files', 'configuracion_sitio', 'configuracion_sitio_propiedades', 'leads'];
+  const colecciones = ['asesores', 'propiedades', 'propiedades_files', 'configuracion_sitio', 'configuracion_sitio_propiedades', 'leads', 'testimonios'];
   for (const collection of colecciones) {
     for (const action of ['create', 'read', 'update', 'delete']) {
       await api('POST', '/permissions', { policy: politicaAdmin.id, collection, action, fields: ['*'], permissions: {} });

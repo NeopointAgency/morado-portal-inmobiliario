@@ -1,6 +1,6 @@
 import { readItems, readSingleton, aggregate } from '@directus/sdk';
 import { directus } from './directus';
-import type { Asesor, ConfiguracionSitio, Operacion, Propiedad, TipoPropiedad } from './types';
+import type { Asesor, ConfiguracionSitio, Operacion, Propiedad, Testimonio, TipoPropiedad } from './types';
 
 export const POR_PAGINA = 12;
 
@@ -143,6 +143,17 @@ export async function asesoresActivos(): Promise<Asesor[]> {
       sort: ['nombre'],
     })
   )) as Asesor[];
+}
+
+export async function testimoniosActivos(): Promise<Testimonio[]> {
+  return (await directus.request(
+    readItems('testimonios', {
+      fields: ['*'],
+      filter: { activo: { _eq: true } },
+      sort: ['sort'],
+      limit: 20,
+    })
+  )) as Testimonio[];
 }
 
 export async function configuracionSitio(): Promise<ConfiguracionSitio | null> {

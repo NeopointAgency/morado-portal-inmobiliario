@@ -225,11 +225,12 @@ const jsonLd = {
         </div>
       </div>
 
-      <!-- Velo de scroll: se oscurece y desenfoca conforme la página sube -->
+      <!-- Velo de scroll: blur fijo, se anima solo la opacidad (estable en
+           iOS y mucho más barato que animar el radio del blur) -->
       <div
         id="velo-scroll"
         class="pointer-events-none absolute inset-0 z-20"
-        style="--blur: 0px; backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); background-color: rgba(33, 16, 54, 0);"
+        style="opacity: 0; visibility: hidden; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background-color: rgba(33, 16, 54, 0.65);"
         aria-hidden="true"
       >
       </div>
@@ -479,16 +480,25 @@ const jsonLd = {
     // reposo su top ya está dentro del viewport: el start va en 90%
     // para que el velo empiece en cero y entre ya avanzado el scroll.
     // En pantallas chicas el blur cuesta caro: se baja a la mitad.
+    const velo = document.getElementById('velo-scroll');
     const esMovil = window.matchMedia('(max-width: 639px)').matches;
+    if (velo && esMovil) {
+      velo.style.backdropFilter = 'blur(7px)';
+      velo.style.setProperty('-webkit-backdrop-filter', 'blur(7px)');
+    }
     gsap.to('#velo-scroll', {
-      '--blur': esMovil ? '7px' : '14px',
-      backgroundColor: 'rgba(33, 16, 54, 0.65)',
+      opacity: 1,
       ease: 'none',
       scrollTrigger: {
         trigger: '#despues-heroe',
         start: 'top 90%',
         end: 'top 25%',
         scrub: true,
+        onUpdate(self) {
+          // Con scroll en cero, invisible garantizado (quirks de WebKit
+          // con backdrop-filter aparte de la opacidad)
+          if (velo) velo.style.visibility = self.progress === 0 ? 'hidden' : 'visible';
+        },
       },
     });
 

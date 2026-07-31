@@ -163,22 +163,51 @@ const jsonLd = {
       <article>
         {
           p.imagen_principal && (
-            <a
-              href={assetUrl(p.imagen_principal, 'galeria')}
-              class="js-lightbox block cursor-zoom-in"
-              data-alt={`Fotografía principal de ${p.titulo}`}
-              aria-label={`Ver fotografía principal de ${p.titulo} en grande`}
-            >
-              <img
-                src={assetUrl(p.imagen_principal, 'hero')}
-                alt={`Fotografía principal de ${p.titulo}`}
-                width={PRESETS.hero.width}
-                height={PRESETS.hero.height}
-                loading="eager"
-                fetchpriority="high"
-                class="aspect-[16/10] w-full rounded-xl bg-morado-100 object-cover"
-              />
-            </a>
+            <div class="relative">
+              <a
+                href={assetUrl(p.imagen_principal, 'galeria')}
+                class="js-lightbox block cursor-zoom-in"
+                data-alt={`Fotografía principal de ${p.titulo}`}
+                aria-label={`Ver fotografía principal de ${p.titulo} en grande`}
+              >
+                <img
+                  src={assetUrl(p.imagen_principal, 'hero')}
+                  alt={`Fotografía principal de ${p.titulo}`}
+                  width={PRESETS.hero.width}
+                  height={PRESETS.hero.height}
+                  loading="eager"
+                  fetchpriority="high"
+                  class="aspect-[16/10] w-full rounded-xl bg-morado-100 object-cover"
+                />
+              </a>
+              {galeria.length > 0 && (
+                <div class="absolute right-3 bottom-3 flex gap-2" aria-label="Más fotografías de esta propiedad">
+                  {galeria.slice(0, 3).map((g, i) => (
+                    <button
+                      type="button"
+                      class="js-lightbox-salto relative block cursor-zoom-in overflow-hidden rounded-lg border-2 border-white/90 shadow-lg transition-transform hover:scale-105"
+                      data-indice={i + 1}
+                      aria-label={`Ver fotografía ${i + 2} de ${p.titulo}`}
+                    >
+                      <img
+                        src={assetUrl(g.directus_files_id, 'thumb')}
+                        alt=""
+                        width="80"
+                        height="56"
+                        loading="eager"
+                        decoding="async"
+                        class="h-12 w-16 object-cover sm:h-14 sm:w-20"
+                      />
+                      {i === 2 && galeria.length > 3 && (
+                        <span class="absolute inset-0 flex items-center justify-center bg-morado-950/60 text-sm font-semibold text-white">
+                          +{galeria.length - 3}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )
         }
 
@@ -491,6 +520,14 @@ const jsonLd = {
       enlace.addEventListener('click', (e) => {
         e.preventDefault();
         mostrar(i);
+        dialogo.showModal();
+      });
+    });
+
+    // Miniaturas en la esquina de la imagen principal: saltan directo a esa foto
+    document.querySelectorAll<HTMLButtonElement>('.js-lightbox-salto').forEach((boton) => {
+      boton.addEventListener('click', () => {
+        mostrar(Number(boton.dataset.indice ?? 0));
         dialogo.showModal();
       });
     });

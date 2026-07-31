@@ -1,0 +1,30 @@
+---
+const ruta = Astro.url.pathname;
+
+const enlaces = [
+  { href: '/propiedades', texto: 'Ver propiedades' },
+  { href: '/asesores', texto: 'Nuestro equipo' },
+  { href: '/contacto', texto: 'Contacto' },
+];
+
+const activo = (href: string) => (ruta === href || ruta.startsWith(href + '/') ? 'page' : undefined);
+---
+
+<header class="encabezado">
+  <div class="contenedor encabezado-interior">
+    <a class="marca" href="/">Morado Bienes Raíces</a>
+    <nav class="nav-principal" aria-label="Navegación principal">
+      <ul>
+        {
+          enlaces.map((e) => (
+            <li>
+              <a href={e.href} aria-current={activo(e.href)}>
+                {e.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

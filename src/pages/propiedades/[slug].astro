@@ -1,0 +1,228 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FormularioLead from '../../components/FormularioLead.astro';
+import { propiedadPorSlug } from '../../lib/queries';
+import { assetUrl, PRESETS } from '../../lib/images';
+import { formatoPrecio, etiqueta } from '../../lib/format';
+import { whatsappUrl } from '../../lib/whatsapp';
+import type { Asesor, GaleriaItem } from '../../lib/types';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const propiedad = slug ? await propiedadPorSlug(slug).catch((e) => {
+  console.error('[ficha] Error al consultar Directus', e);
+  return null;
+}) : null;
+
+if (!propiedad) {
+  return Astro.rewrite('/404');
+}
+
+const p = propiedad;
+const asesor = p.asesor && typeof p.asesor === 'object' ? (p.asesor as Asesor) : null;
+const noDisponible = p.estatus === 'vendida' || p.estatus === 'rentada';
+
+const sitio = import.meta.env.PUBLIC_SITE_URL ?? Astro.url.origin;
+const urlFicha = new URL(`/propiedades/${p.slug}`, sitio).href;
+
+const ubicacion = [p.zona && etiqueta(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
+
+// SEO: campos meta con fallback generado del título y la zona
+const tituloSeo = p.meta_titulo ?? `${p.titulo} | Morado Bienes Raíces`;
+const descripcionSeo =
+  p.meta_descripcion ??
+  `${etiqueta(p.tipo)} en ${p.operacion} en ${ubicacion || 'Celaya'}. ${formatoPrecio(p.precio, p.moneda, p.operacion)}. Habla directo con el asesor.`;
+
+const galeria: GaleriaItem[] = Array.isArray(p.galeria)
+  ? (p.galeria.filter((g): g is GaleriaItem => typeof g === 'object' && g !== null) as GaleriaItem[])
+  : [];
+
+const caracteristicas: [string, string][] = [];
+if (p.recamaras) caracteristicas.push(['Recámaras', String(p.recamaras)]);
+if (p.banos) caracteristicas.push(['Baños', String(p.banos)]);
+if (p.estacionamientos) caracteristicas.push(['Estacionamientos', String(p.estacionamientos)]);
+if (p.m2_terreno) caracteristicas.push(['Terreno', `${p.m2_terreno} m²`]);
+if (p.m2_construccion) caracteristicas.push(['Construcción', `${p.m2_construccion} m²`]);
+if (p.antiguedad) caracteristicas.push(['Antigüedad', `${p.antiguedad} años`]);
+
+const amenidades = Array.isArray(p.amenidades) ? p.amenidades : [];
+
+// JSON-LD RealEstateListing para buscadores
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateListing',
+  name: p.titulo,
+  url: urlFicha,
+  ...(p.imagen_principal
+    ? { image: [assetUrl(p.imagen_principal, 'hero'), ...galeria.map((g) => assetUrl(g.directus_files_id, 'galeria'))] }
+    : {}),
+  offers: {
+    '@type': 'Offer',
+    price: p.precio,
+    priceCurrency: p.moneda,
+    availability: noDisponible ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    ...(p.ciudad ? { addressLocality: etiqueta(p.ciudad) } : {}),
+    addressRegion: 'Guanajuato',
+    addressCountry: 'MX',
+  },
+  ...(p.recamaras ? { numberOfRooms: p.recamaras } : {}),
+  ...(p.banos ? { numberOfBathroomsTotal: p.banos } : {}),
+  ...(p.m2_construccion
+    ? { floorSize: { '@type': 'QuantitativeValue', value: p.m2_construccion, unitCode: 'MTK' } }
+    : {}),
+};
+---
+
+<Layout
+  titulo={tituloSeo}
+  descripcion={descripcionSeo}
+  ogImagen={p.imagen_principal ? assetUrl(p.imagen_principal, 'card') : undefined}
+  ogTipo="article"
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+
+  <div class="contenedor seccion">
+    <nav aria-label="Ruta de navegación" style="font-size: 0.9rem; margin-bottom: 1rem;">
+      <a href="/propiedades">← Ver propiedades</a>
+    </nav>
+
+    <div class="ficha-columnas">
+      <article>
+        {p.imagen_principal && (
+          <img
+            src={assetUrl(p.imagen_principal, 'hero')}
+            alt={`Fotografía principal de ${p.titulo}`}
+            width={PRESETS.hero.width}
+            height={PRESETS.hero.height}
+            loading="eager"
+            fetchpriority="high"
+            style="border-radius: 0.5rem;"
+          />
+        )}
+
+        <header style="margin-top: 1.25rem;">
+          <span class="etiqueta-operacion">
+            {p.operacion === 'venta' ? 'En venta' : 'En renta'} · {etiqueta(p.tipo)}
+            {p.estatus === 'apartada' && ' · Apartada'}
+          </span>
+          <h1 style="margin: 0.25rem 0;">{p.titulo}</h1>
+          {ubicacion && <p class="tarjeta-ubicacion">{ubicacion}</p>}
+          {p.mostrar_direccion_exacta && p.direccion && <p class="tarjeta-ubicacion">{p.direccion}</p>}
+          <p class="tarjeta-precio" style="font-size: 1.6rem;">{formatoPrecio(p.precio, p.moneda, p.operacion)}</p>
+        </header>
+
+        {noDisponible && (
+          <p class="aviso" role="status">
+            Esta propiedad ya se {p.estatus === 'vendida' ? 'vendió' : 'rentó'}.
+            <a href="/propiedades">Mira otras propiedades disponibles</a>.
+          </p>
+        )}
+
+        {caracteristicas.length > 0 && (
+          <section class="seccion">
+            <h2>Características</h2>
+            <ul class="lista-caracteristicas">
+              {caracteristicas.map(([nombre, valor]) => (
+                <li>
+                  <strong>{nombre}:</strong> {valor}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {amenidades.length > 0 && (
+          <section class="seccion">
+            <h2>Amenidades</h2>
+            <ul class="tarjeta-detalles" style="font-size: 1rem;">
+              {amenidades.map((a) => (
+                <li>{a}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {p.descripcion && (
+          <section class="seccion">
+            <h2>Acerca de esta propiedad</h2>
+            <div set:html={p.descripcion} />
+          </section>
+        )}
+
+        {p.video_url && (
+          <section class="seccion">
+            <h2>Video</h2>
+            <p>
+              <a href={p.video_url} target="_blank" rel="noopener">Ver video de la propiedad</a>
+            </p>
+          </section>
+        )}
+
+        {galeria.length > 0 && (
+          <section class="seccion">
+            <h2>Galería</h2>
+            <ul class="galeria">
+              {galeria.map((g, i) => (
+                <li>
+                  <img
+                    src={assetUrl(g.directus_files_id, 'galeria')}
+                    alt={`Fotografía ${i + 2} de ${p.titulo}`}
+                    width={PRESETS.galeria.width}
+                    height={PRESETS.galeria.height}
+                    loading="lazy"
+                    decoding="async"
+                    style="border-radius: 0.375rem;"
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </article>
+
+      <aside class="panel-asesor">
+        {asesor ? (
+          <>
+            <div style="display: flex; gap: 0.875rem; align-items: center; margin-bottom: 1rem;">
+              {asesor.foto && (
+                <img
+                  src={assetUrl(asesor.foto, 'thumb')}
+                  alt={`Fotografía de ${asesor.nombre}`}
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                />
+              )}
+              <div>
+                <p style="margin: 0; font-weight: 700;">{asesor.nombre}</p>
+                {asesor.puesto && <p style="margin: 0; font-size: 0.85rem; color: var(--tinta-suave);">{asesor.puesto}</p>}
+              </div>
+            </div>
+            {!noDisponible && (
+              <>
+                <a
+                  class="boton"
+                  style="display: block; text-align: center; margin-bottom: 1rem;"
+                  href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)}
+                >
+                  Enviar WhatsApp
+                </a>
+                <p style="text-align: center; color: var(--tinta-suave); font-size: 0.9rem;">o déjanos tus datos:</p>
+              </>
+            )}
+            {!noDisponible && <FormularioLead propiedadId={p.id} origen="ficha" />}
+          </>
+        ) : (
+          <>
+            <p style="font-weight: 700;">¿Te interesa esta propiedad?</p>
+            {!noDisponible && <FormularioLead propiedadId={p.id} origen="ficha" />}
+          </>
+        )}
+      </aside>
+    </div>
+  </div>
+</Layout>

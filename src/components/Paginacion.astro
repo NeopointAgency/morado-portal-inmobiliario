@@ -1,0 +1,43 @@
+---
+interface Props {
+  pagina: number;
+  totalPaginas: number;
+  /** Query params actuales, para conservar los filtros al cambiar de página */
+  params: URLSearchParams;
+  ruta: string;
+}
+
+const { pagina, totalPaginas, params, ruta } = Astro.props;
+
+function urlPagina(n: number): string {
+  const p = new URLSearchParams(params);
+  if (n <= 1) p.delete('pagina');
+  else p.set('pagina', String(n));
+  const qs = p.toString();
+  return qs ? `${ruta}?${qs}` : ruta;
+}
+---
+
+{
+  totalPaginas > 1 && (
+    <nav class="paginacion" aria-label="Paginación">
+      {pagina > 1 ? (
+        <a class="boton boton-secundario" href={urlPagina(pagina - 1)} rel="prev">
+          ← Anterior
+        </a>
+      ) : (
+        <span />
+      )}
+      <span>
+        Página {pagina} de {totalPaginas}
+      </span>
+      {pagina < totalPaginas ? (
+        <a class="boton boton-secundario" href={urlPagina(pagina + 1)} rel="next">
+          Siguiente →
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}

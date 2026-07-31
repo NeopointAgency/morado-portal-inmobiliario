@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FormularioLead from '../components/FormularioLead.astro';
+import { configuracionSitio } from '../lib/queries';
+import { whatsappUrl } from '../lib/whatsapp';
+
+export const prerender = false;
+
+const config = await configuracionSitio();
+---
+
+<Layout
+  titulo="Contacto | Morado Bienes Raíces"
+  descripcion="Escríbenos por WhatsApp, llámanos o visítanos en Celaya. Te ayudamos a encontrar tu próxima propiedad."
+>
+  <div class="contenedor seccion">
+    <h1>Contacto</h1>
+
+    <div class="ficha-columnas">
+      <section aria-label="Formulario de contacto">
+        <p>Cuéntanos qué buscas y te contactamos. O si prefieres, escríbenos directo por WhatsApp.</p>
+        <FormularioLead origen="contacto" />
+      </section>
+
+      <aside class="panel-asesor" aria-label="Datos de contacto">
+        {config?.whatsapp_general && (
+          <p>
+            <a class="boton" style="display: block; text-align: center;" href={whatsappUrl(config.whatsapp_general)}>
+              Enviar WhatsApp
+            </a>
+          </p>
+        )}
+        {config?.telefono_general && (
+          <p>
+            <strong>Teléfono:</strong>{' '}
+            <a href={`tel:${config.telefono_general.replace(/\s/g, '')}`}>{config.telefono_general}</a>
+          </p>
+        )}
+        {config?.email_contacto && (
+          <p>
+            <strong>Correo:</strong> <a href={`mailto:${config.email_contacto}`}>{config.email_contacto}</a>
+          </p>
+        )}
+        {config?.direccion_oficina && (
+          <p>
+            <strong>Oficina:</strong>
+            <br />
+            {config.direccion_oficina}
+          </p>
+        )}
+        {!config && <p class="aviso">Muy pronto encontrarás aquí nuestros datos de contacto.</p>}
+      </aside>
+    </div>
+  </div>
+</Layout>

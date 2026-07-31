@@ -1,0 +1,56 @@
+---
+import type { Propiedad } from '../lib/types';
+import { assetUrl, PRESETS } from '../lib/images';
+import { formatoPrecio, etiqueta } from '../lib/format';
+
+interface Props {
+  propiedad: Propiedad;
+  /** Las tarjetas sobre el fold (p. ej. primeras del listado) cargan eager */
+  prioridad?: boolean;
+}
+
+const { propiedad: p, prioridad = false } = Astro.props;
+
+const ubicacion = [p.zona && etiqueta(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
+
+const detalles: string[] = [];
+if (p.recamaras) detalles.push(`${p.recamaras} rec`);
+if (p.banos) detalles.push(`${p.banos} baños`);
+if (p.estacionamientos) detalles.push(`${p.estacionamientos} autos`);
+if (p.m2_construccion) detalles.push(`${p.m2_construccion} m² constr.`);
+else if (p.m2_terreno) detalles.push(`${p.m2_terreno} m² terreno`);
+---
+
+<article class="tarjeta">
+  {
+    p.imagen_principal ? (
+      <img
+        src={assetUrl(p.imagen_principal, 'thumb')}
+        alt=""
+        width={PRESETS.thumb.width}
+        height={PRESETS.thumb.height}
+        loading={prioridad ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    ) : (
+      <div style={`aspect-ratio: 3/2; background: var(--fondo-suave);`} />
+    )
+  }
+  <div class="tarjeta-cuerpo">
+    <span class="etiqueta-operacion">{p.operacion === 'venta' ? 'En venta' : 'En renta'}{p.estatus === 'apartada' ? ' · Apartada' : ''}</span>
+    <p class="tarjeta-precio">{formatoPrecio(p.precio, p.moneda, p.operacion)}</p>
+    <h3 class="tarjeta-titulo">
+      <a href={`/propiedades/${p.slug}`}>{p.titulo}</a>
+    </h3>
+    {ubicacion && <p class="tarjeta-ubicacion">{ubicacion}</p>}
+    {
+      detalles.length > 0 && (
+        <ul class="tarjeta-detalles">
+          {detalles.map((d) => (
+            <li>{d}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>

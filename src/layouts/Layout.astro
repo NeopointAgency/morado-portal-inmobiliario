@@ -1,0 +1,48 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+  /** URL absoluta de la imagen para Open Graph (las fichas se comparten por WhatsApp) */
+  ogImagen?: string;
+  ogTipo?: string;
+}
+
+const { titulo, descripcion, ogImagen, ogTipo = 'website' } = Astro.props;
+
+const sitio = import.meta.env.PUBLIC_SITE_URL ?? Astro.url.origin;
+const canonical = new URL(Astro.url.pathname, sitio).href;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    {descripcion && <meta name="description" content={descripcion} />}
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={titulo} />
+    {descripcion && <meta property="og:description" content={descripcion} />}
+    <meta property="og:type" content={ogTipo} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_MX" />
+    {ogImagen && <meta property="og:image" content={ogImagen} />}
+    {ogImagen && <meta name="twitter:card" content="summary_large_image" />}
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="visualmente-oculto" href="#contenido">Ir al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

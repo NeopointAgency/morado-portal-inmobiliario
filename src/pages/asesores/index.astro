@@ -1,0 +1,49 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { asesoresActivos } from '../../lib/queries';
+import { assetUrl } from '../../lib/images';
+import { slugify } from '../../lib/format';
+import type { Asesor } from '../../lib/types';
+
+export const prerender = false;
+
+let asesores: Asesor[] = [];
+let errorCarga = false;
+try {
+  asesores = await asesoresActivos();
+} catch (error) {
+  console.error('[asesores] Error al consultar Directus', error);
+  errorCarga = true;
+}
+---
+
+<Layout
+  titulo="Nuestro equipo | Morado Bienes Raíces"
+  descripcion="Conoce a los asesores inmobiliarios de Morado Bienes Raíces en Celaya. Atención directa y personal por WhatsApp."
+>
+  <div class="contenedor seccion">
+    <h1>Nuestro equipo</h1>
+
+    {errorCarga && (
+      <p class="aviso" role="alert">No pudimos cargar al equipo en este momento. Intenta de nuevo en unos minutos.</p>
+    )}
+
+    {!errorCarga && asesores.length === 0 && <p class="aviso">Muy pronto conocerás aquí a nuestro equipo.</p>}
+
+    <ul class="cuadricula-asesores">
+      {asesores.map((a) => (
+        <li>
+          <article class="tarjeta-asesor">
+            {a.foto && (
+              <img src={assetUrl(a.foto, 'thumb')} alt={`Fotografía de ${a.nombre}`} width="96" height="96" loading="lazy" />
+            )}
+            <h2 style="font-size: 1.05rem; margin: 0 0 0.25rem;">
+              <a href={`/asesores/${slugify(a.nombre)}`} style="text-decoration: none;">{a.nombre}</a>
+            </h2>
+            {a.puesto && <p style="margin: 0; color: var(--tinta-suave); font-size: 0.9rem;">{a.puesto}</p>}
+          </article>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Layout>

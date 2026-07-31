@@ -1,0 +1,145 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TarjetaPropiedad from '../../components/TarjetaPropiedad.astro';
+import Paginacion from '../../components/Paginacion.astro';
+import { buscarPropiedades, filtrosDesdeParams } from '../../lib/queries';
+import { OPERACIONES, TIPOS, CIUDADES } from '../../lib/types';
+import type { ResultadoBusqueda } from '../../lib/queries';
+
+export const prerender = false;
+
+const params = Astro.url.searchParams;
+const filtros = filtrosDesdeParams(params);
+
+// Query params → filtro de Directus, siempre del lado del servidor.
+let resultado: ResultadoBusqueda | null = null;
+let errorCarga = false;
+try {
+  resultado = await buscarPropiedades(filtros);
+} catch (error) {
+  console.error('[propiedades] Error al consultar Directus', error);
+  errorCarga = true;
+}
+
+const titulo = 'Propiedades en venta y renta | Morado Bienes Raíces';
+const descripcion =
+  'Casas, departamentos, terrenos y locales en Celaya y la región. Encuentra tu propiedad y habla directo con el asesor.';
+---
+
+<Layout titulo={titulo} descripcion={descripcion}>
+  <div class="contenedor seccion">
+    <h1>Propiedades</h1>
+
+    <form class="barra-filtros" method="get" action="/propiedades">
+      <div class="campo">
+        <label for="f-operacion">Quiero</label>
+        <select id="f-operacion" name="operacion">
+          <option value="">Comprar o rentar</option>
+          {OPERACIONES.map((o) => (
+            <option value={o.valor} selected={filtros.operacion === o.valor}>
+              {o.etiqueta}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="f-tipo">Tipo</label>
+        <select id="f-tipo" name="tipo">
+          <option value="">Todos</option>
+          {TIPOS.map((t) => (
+            <option value={t.valor} selected={filtros.tipo === t.valor}>
+              {t.etiqueta}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="f-ciudad">Ciudad</label>
+        <select id="f-ciudad" name="ciudad">
+          <option value="">Todas</option>
+          {CIUDADES.map((c) => (
+            <option value={c.valor} selected={filtros.ciudad === c.valor}>
+              {c.etiqueta}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="f-recamaras">Recámaras</label>
+        <select id="f-recamaras" name="recamaras">
+          <option value="">Cualquiera</option>
+          {[1, 2, 3, 4].map((n) => (
+            <option value={String(n)} selected={filtros.recamaras === n}>
+              {n}+
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="f-precio-min">Precio desde</label>
+        <input
+          type="number"
+          id="f-precio-min"
+          name="precio_min"
+          min="0"
+          step="50000"
+          inputmode="numeric"
+          value={filtros.precio_min ?? ''}
+        />
+      </div>
+
+      <div class="campo">
+        <label for="f-precio-max">Precio hasta</label>
+        <input
+          type="number"
+          id="f-precio-max"
+          name="precio_max"
+          min="0"
+          step="50000"
+          inputmode="numeric"
+          value={filtros.precio_max ?? ''}
+        />
+      </div>
+
+      <button type="submit" class="boton">Buscar</button>
+    </form>
+
+    {errorCarga && (
+      <p class="aviso" role="alert">
+        No pudimos cargar las propiedades en este momento. Intenta de nuevo en unos minutos.
+      </p>
+    )}
+
+    {resultado && resultado.items.length === 0 && (
+      <div class="aviso">
+        <p>No encontramos propiedades con esos filtros.</p>
+        <p><a href="/propiedades">Ver todas las propiedades</a></p>
+      </div>
+    )}
+
+    {resultado && resultado.items.length > 0 && (
+      <>
+        <p style="color: var(--tinta-suave);">
+          {resultado.total} {resultado.total === 1 ? 'propiedad' : 'propiedades'}
+        </p>
+        <ul class="cuadricula-propiedades">
+          {resultado.items.map((p, i) => (
+            <li>
+              <TarjetaPropiedad propiedad={p} prioridad={i < 3 && filtros.pagina === 1} />
+            </li>
+          ))}
+        </ul>
+        <Paginacion
+          pagina={resultado.pagina}
+          totalPaginas={resultado.totalPaginas}
+          params={params}
+          ruta="/propiedades"
+        />
+      </>
+    )}
+  </div>
+</Layout>

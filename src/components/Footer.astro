@@ -1,16 +1,40 @@
 ---
+import Marca from './Marca.astro';
+
 const anio = new Date().getFullYear();
 ---
 
-<footer class="pie">
-  <div class="contenedor">
-    <p>© {anio} Morado Bienes Raíces · Celaya, Guanajuato</p>
+<footer class="bg-morado-950 text-white">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
+    <div>
+      <Marca clase="text-white" />
+      <p class="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
+        Venta y renta de propiedades en regla y sin letras chicas — Celaya, Querétaro y San Miguel de Allende.
+      </p>
+    </div>
+
     <nav aria-label="Navegación del pie">
-      <ul class="nav-pie" style="list-style:none; padding:0; display:flex; gap:1rem; flex-wrap:wrap;">
-        <li><a href="/propiedades">Ver propiedades</a></li>
-        <li><a href="/asesores">Nuestro equipo</a></li>
-        <li><a href="/contacto">Contacto</a></li>
+      <p class="mb-3 text-xs font-semibold tracking-[0.2em] text-white/50 uppercase">Explora</p>
+      <ul class="space-y-2 text-sm">
+        <li><a class="text-white/80 no-underline hover:text-white hover:underline" href="/propiedades">Ver propiedades</a></li>
+        <li><a class="text-white/80 no-underline hover:text-white hover:underline" href="/asesores">Nuestro equipo</a></li>
+        <li><a class="text-white/80 no-underline hover:text-white hover:underline" href="/#metodo">Por qué nosotros</a></li>
+        <li><a class="text-white/80 no-underline hover:text-white hover:underline" href="/contacto">Contáctanos</a></li>
       </ul>
     </nav>
+
+    <div>
+      <p class="mb-3 text-xs font-semibold tracking-[0.2em] text-white/50 uppercase">Confianza</p>
+      <ul class="space-y-2 text-sm text-white/80">
+        <li>+30 años de experiencia</li>
+        <li>Miembro AMPI</li>
+        <li>Asesores certificados CONOCER-SEP</li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <p class="mx-auto max-w-7xl px-4 py-5 text-xs text-white/50 sm:px-6">
+      © {anio} Morado Bienes Raíces · Celaya, Guanajuato
+    </p>
   </div>
 </footer>

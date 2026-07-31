@@ -20,19 +20,19 @@ function urlPagina(n: number): string {
 
 {
   totalPaginas > 1 && (
-    <nav class="paginacion" aria-label="Paginación">
+    <nav class="mt-12 flex items-center justify-center gap-6" aria-label="Paginación">
       {pagina > 1 ? (
-        <a class="boton boton-secundario" href={urlPagina(pagina - 1)} rel="prev">
+        <a class="boton-borde" href={urlPagina(pagina - 1)} rel="prev">
           ← Anterior
         </a>
       ) : (
         <span />
       )}
-      <span>
+      <span class="text-sm text-morado-950/60">
         Página {pagina} de {totalPaginas}
       </span>
       {pagina < totalPaginas ? (
-        <a class="boton boton-secundario" href={urlPagina(pagina + 1)} rel="next">
+        <a class="boton-borde" href={urlPagina(pagina + 1)} rel="next">
           Siguiente →
         </a>
       ) : (

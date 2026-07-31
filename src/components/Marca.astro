@@ -1,0 +1,12 @@
+---
+/** Wordmark de Morado (hasta que llegue el logo definitivo al CMS) */
+interface Props {
+  clase?: string;
+}
+const { clase = '' } = Astro.props;
+---
+
+<a href="/" class={`inline-block leading-none no-underline ${clase}`}>
+  <span class="font-display text-2xl tracking-wide">MORADO</span>
+  <span class="mt-1 block text-[0.6rem] font-medium tracking-[0.45em] uppercase opacity-80">Bienes Raíces</span>
+</a>

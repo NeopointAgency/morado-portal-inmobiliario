@@ -13,42 +13,64 @@ const config = await configuracionSitio();
   titulo="Contacto | Morado Bienes Raíces"
   descripcion="Escríbenos por WhatsApp, llámanos o visítanos en Celaya. Te ayudamos a encontrar tu próxima propiedad."
 >
-  <div class="contenedor seccion">
-    <h1>Contacto</h1>
+  <div class="bg-morado-950 text-white">
+    <div class="mx-auto max-w-7xl px-4 pt-10 pb-12 sm:px-6">
+      <h1 class="text-4xl sm:text-5xl">Contacto</h1>
+      <p class="mt-2 max-w-xl text-white/70">
+        Cuéntanos qué buscas y te contactamos. O si prefieres, escríbenos directo por WhatsApp.
+      </p>
+    </div>
+  </div>
 
-    <div class="ficha-columnas">
-      <section aria-label="Formulario de contacto">
-        <p>Cuéntanos qué buscas y te contactamos. O si prefieres, escríbenos directo por WhatsApp.</p>
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <div class="grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start">
+      <section aria-label="Formulario de contacto" class="rounded-xl bg-white p-6 shadow-lg ring-1 ring-morado-950/5 sm:p-8">
         <FormularioLead origen="contacto" />
       </section>
 
-      <aside class="panel-asesor" aria-label="Datos de contacto">
-        {config?.whatsapp_general && (
-          <p>
-            <a class="boton" style="display: block; text-align: center;" href={whatsappUrl(config.whatsapp_general)}>
+      <aside class="rounded-xl bg-morado-100 p-6 sm:p-8" aria-label="Datos de contacto">
+        {
+          config?.whatsapp_general && (
+            <a class="boton-oscuro w-full" href={whatsappUrl(config.whatsapp_general)}>
               Enviar WhatsApp
             </a>
-          </p>
-        )}
-        {config?.telefono_general && (
-          <p>
-            <strong>Teléfono:</strong>{' '}
-            <a href={`tel:${config.telefono_general.replace(/\s/g, '')}`}>{config.telefono_general}</a>
-          </p>
-        )}
-        {config?.email_contacto && (
-          <p>
-            <strong>Correo:</strong> <a href={`mailto:${config.email_contacto}`}>{config.email_contacto}</a>
-          </p>
-        )}
-        {config?.direccion_oficina && (
-          <p>
-            <strong>Oficina:</strong>
-            <br />
-            {config.direccion_oficina}
-          </p>
-        )}
-        {!config && <p class="aviso">Muy pronto encontrarás aquí nuestros datos de contacto.</p>}
+          )
+        }
+        <dl class="mt-6 space-y-4 text-sm">
+          {
+            config?.telefono_general && (
+              <div>
+                <dt class="font-medium text-morado-950/50 uppercase">Teléfono</dt>
+                <dd class="mt-0.5 text-base">
+                  <a href={`tel:${config.telefono_general.replace(/\s/g, '')}`} class="no-underline hover:underline">
+                    {config.telefono_general}
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+          {
+            config?.email_contacto && (
+              <div>
+                <dt class="font-medium text-morado-950/50 uppercase">Correo</dt>
+                <dd class="mt-0.5 text-base">
+                  <a href={`mailto:${config.email_contacto}`} class="no-underline hover:underline">
+                    {config.email_contacto}
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+          {
+            config?.direccion_oficina && (
+              <div>
+                <dt class="font-medium text-morado-950/50 uppercase">Oficina</dt>
+                <dd class="mt-0.5 text-base whitespace-pre-line">{config.direccion_oficina}</dd>
+              </div>
+            )
+          }
+        </dl>
+        {!config && <p class="text-morado-950/70">Muy pronto encontrarás aquí nuestros datos de contacto.</p>}
       </aside>
     </div>
   </div>

@@ -21,29 +21,54 @@ try {
   titulo="Nuestro equipo | Morado Bienes Raíces"
   descripcion="Conoce a los asesores inmobiliarios de Morado Bienes Raíces en Celaya. Atención directa y personal por WhatsApp."
 >
-  <div class="contenedor seccion">
-    <h1>Nuestro equipo</h1>
+  <div class="bg-morado-950 text-white">
+    <div class="mx-auto max-w-7xl px-4 pt-10 pb-12 sm:px-6">
+      <h1 class="text-4xl sm:text-5xl">Nuestro equipo</h1>
+      <p class="mt-2 max-w-xl text-white/70">
+        Asesores certificados CONOCER-SEP que te acompañan de principio a fin.
+      </p>
+    </div>
+  </div>
 
-    {errorCarga && (
-      <p class="aviso" role="alert">No pudimos cargar al equipo en este momento. Intenta de nuevo en unos minutos.</p>
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    {
+      errorCarga && (
+        <p class="rounded-xl bg-morado-100 p-6 text-morado-950/80" role="alert">
+          No pudimos cargar al equipo en este momento. Intenta de nuevo en unos minutos.
+        </p>
+      )
+    }
+
+    {!errorCarga && asesores.length === 0 && (
+      <p class="rounded-xl bg-morado-100 p-6 text-morado-950/80">Muy pronto conocerás aquí a nuestro equipo.</p>
     )}
 
-    {!errorCarga && asesores.length === 0 && <p class="aviso">Muy pronto conocerás aquí a nuestro equipo.</p>}
-
-    <ul class="cuadricula-asesores">
-      {asesores.map((a) => (
-        <li>
-          <article class="tarjeta-asesor">
-            {a.foto && (
-              <img src={assetUrl(a.foto, 'thumb')} alt={`Fotografía de ${a.nombre}`} width="96" height="96" loading="lazy" />
-            )}
-            <h2 style="font-size: 1.05rem; margin: 0 0 0.25rem;">
-              <a href={`/asesores/${slugify(a.nombre)}`} style="text-decoration: none;">{a.nombre}</a>
-            </h2>
-            {a.puesto && <p style="margin: 0; color: var(--tinta-suave); font-size: 0.9rem;">{a.puesto}</p>}
-          </article>
-        </li>
-      ))}
+    <ul class="grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        asesores.map((a) => (
+          <li>
+            <a href={`/asesores/${slugify(a.nombre)}`} class="group block no-underline">
+              {a.foto ? (
+                <img
+                  src={assetUrl(a.foto, 'card')}
+                  alt={`Fotografía de ${a.nombre}`}
+                  width="448"
+                  height="560"
+                  loading="lazy"
+                  decoding="async"
+                  class="aspect-[4/5] w-full rounded-xl bg-morado-100 object-cover"
+                />
+              ) : (
+                <span class="flex aspect-[4/5] w-full items-center justify-center rounded-xl bg-morado-100 font-display text-5xl text-morado-500">
+                  {a.nombre.charAt(0)}
+                </span>
+              )}
+              <span class="mt-3 block text-lg font-medium group-hover:underline">{a.nombre}</span>
+              {a.puesto && <span class="block text-sm text-morado-950/60">{a.puesto}</span>}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 </Layout>

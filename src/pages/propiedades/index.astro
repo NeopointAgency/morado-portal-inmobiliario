@@ -23,17 +23,28 @@ try {
 
 const titulo = 'Propiedades en venta y renta | Morado Bienes Raíces';
 const descripcion =
-  'Casas, departamentos, terrenos y locales en Celaya y la región. Encuentra tu propiedad y habla directo con el asesor.';
+  'Casas, departamentos, terrenos y locales en Celaya, Querétaro y San Miguel de Allende. Encuentra tu propiedad y habla directo con el asesor.';
+
+const claseLabel = 'mb-1 block text-sm font-medium';
 ---
 
 <Layout titulo={titulo} descripcion={descripcion}>
-  <div class="contenedor seccion">
-    <h1>Propiedades</h1>
+  <div class="bg-morado-950 text-white">
+    <div class="mx-auto max-w-7xl px-4 pt-10 pb-12 sm:px-6">
+      <h1 class="text-4xl sm:text-5xl">Propiedades</h1>
+      <p class="mt-2 text-white/70">Todo lo que ves aquí ya pasó por el Expediente Morado: en regla y sin letras chicas.</p>
+    </div>
+  </div>
 
-    <form class="barra-filtros" method="get" action="/propiedades">
-      <div class="campo">
-        <label for="f-operacion">Quiero</label>
-        <select id="f-operacion" name="operacion">
+  <div class="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+    <form
+      class="relative z-10 -mt-6 grid items-end gap-4 rounded-xl bg-white p-5 shadow-lg ring-1 ring-morado-950/5 sm:grid-cols-2 lg:grid-cols-7"
+      method="get"
+      action="/propiedades"
+    >
+      <div>
+        <label for="f-operacion" class={claseLabel}>Quiero</label>
+        <select id="f-operacion" name="operacion" class="campo-input">
           <option value="">Comprar o rentar</option>
           {OPERACIONES.map((o) => (
             <option value={o.valor} selected={filtros.operacion === o.valor}>
@@ -43,9 +54,9 @@ const descripcion =
         </select>
       </div>
 
-      <div class="campo">
-        <label for="f-tipo">Tipo</label>
-        <select id="f-tipo" name="tipo">
+      <div>
+        <label for="f-tipo" class={claseLabel}>Tipo</label>
+        <select id="f-tipo" name="tipo" class="campo-input">
           <option value="">Todos</option>
           {TIPOS.map((t) => (
             <option value={t.valor} selected={filtros.tipo === t.valor}>
@@ -55,9 +66,9 @@ const descripcion =
         </select>
       </div>
 
-      <div class="campo">
-        <label for="f-ciudad">Ciudad</label>
-        <select id="f-ciudad" name="ciudad">
+      <div>
+        <label for="f-ciudad" class={claseLabel}>Ciudad</label>
+        <select id="f-ciudad" name="ciudad" class="campo-input">
           <option value="">Todas</option>
           {CIUDADES.map((c) => (
             <option value={c.valor} selected={filtros.ciudad === c.valor}>
@@ -67,9 +78,9 @@ const descripcion =
         </select>
       </div>
 
-      <div class="campo">
-        <label for="f-recamaras">Recámaras</label>
-        <select id="f-recamaras" name="recamaras">
+      <div>
+        <label for="f-recamaras" class={claseLabel}>Recámaras</label>
+        <select id="f-recamaras" name="recamaras" class="campo-input">
           <option value="">Cualquiera</option>
           {[1, 2, 3, 4].map((n) => (
             <option value={String(n)} selected={filtros.recamaras === n}>
@@ -79,8 +90,8 @@ const descripcion =
         </select>
       </div>
 
-      <div class="campo">
-        <label for="f-precio-min">Precio desde</label>
+      <div>
+        <label for="f-precio-min" class={claseLabel}>Precio desde</label>
         <input
           type="number"
           id="f-precio-min"
@@ -89,11 +100,12 @@ const descripcion =
           step="50000"
           inputmode="numeric"
           value={filtros.precio_min ?? ''}
+          class="campo-input"
         />
       </div>
 
-      <div class="campo">
-        <label for="f-precio-max">Precio hasta</label>
+      <div>
+        <label for="f-precio-max" class={claseLabel}>Precio hasta</label>
         <input
           type="number"
           id="f-precio-max"
@@ -102,44 +114,52 @@ const descripcion =
           step="50000"
           inputmode="numeric"
           value={filtros.precio_max ?? ''}
+          class="campo-input"
         />
       </div>
 
-      <button type="submit" class="boton">Buscar</button>
+      <button type="submit" class="boton-oscuro">Buscar</button>
     </form>
 
-    {errorCarga && (
-      <p class="aviso" role="alert">
-        No pudimos cargar las propiedades en este momento. Intenta de nuevo en unos minutos.
-      </p>
-    )}
+    <div class="mt-10">
+      {
+        errorCarga && (
+          <p class="rounded-xl bg-morado-100 p-6 text-morado-950/80" role="alert">
+            No pudimos cargar las propiedades en este momento. Intenta de nuevo en unos minutos.
+          </p>
+        )
+      }
 
-    {resultado && resultado.items.length === 0 && (
-      <div class="aviso">
-        <p>No encontramos propiedades con esos filtros.</p>
-        <p><a href="/propiedades">Ver todas las propiedades</a></p>
-      </div>
-    )}
+      {
+        resultado && resultado.items.length === 0 && (
+          <div class="rounded-xl bg-morado-100 p-6 text-morado-950/80">
+            <p>No encontramos propiedades con esos filtros.</p>
+            <p class="mt-2">
+              <a href="/propiedades" class="font-medium text-morado-700">
+                Ver todas las propiedades
+              </a>
+            </p>
+          </div>
+        )
+      }
 
-    {resultado && resultado.items.length > 0 && (
-      <>
-        <p style="color: var(--tinta-suave);">
-          {resultado.total} {resultado.total === 1 ? 'propiedad' : 'propiedades'}
-        </p>
-        <ul class="cuadricula-propiedades">
-          {resultado.items.map((p, i) => (
-            <li>
-              <TarjetaPropiedad propiedad={p} prioridad={i < 3 && filtros.pagina === 1} />
-            </li>
-          ))}
-        </ul>
-        <Paginacion
-          pagina={resultado.pagina}
-          totalPaginas={resultado.totalPaginas}
-          params={params}
-          ruta="/propiedades"
-        />
-      </>
-    )}
+      {
+        resultado && resultado.items.length > 0 && (
+          <>
+            <p class="text-sm text-morado-950/60">
+              {resultado.total} {resultado.total === 1 ? 'propiedad' : 'propiedades'}
+            </p>
+            <ul class="mt-4 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+              {resultado.items.map((p, i) => (
+                <li>
+                  <TarjetaPropiedad propiedad={p} prioridad={i < 3 && filtros.pagina === 1} />
+                </li>
+              ))}
+            </ul>
+            <Paginacion pagina={resultado.pagina} totalPaginas={resultado.totalPaginas} params={params} ruta="/propiedades" />
+          </>
+        )
+      }
+    </div>
   </div>
 </Layout>

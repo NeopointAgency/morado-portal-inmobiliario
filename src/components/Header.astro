@@ -1,30 +1,57 @@
 ---
-const ruta = Astro.url.pathname;
+import Marca from './Marca.astro';
 
+interface Props {
+  /** Flota transparente sobre el héroe del home */
+  sobrepuesto?: boolean;
+}
+const { sobrepuesto = false } = Astro.props;
+
+const ruta = Astro.url.pathname;
 const enlaces = [
-  { href: '/propiedades', texto: 'Ver propiedades' },
-  { href: '/asesores', texto: 'Nuestro equipo' },
-  { href: '/contacto', texto: 'Contacto' },
+  { href: '/', texto: 'Inicio' },
+  { href: '/propiedades', texto: 'Propiedades' },
+  { href: '/#metodo', texto: 'Por qué nosotros' },
 ];
 
-const activo = (href: string) => (ruta === href || ruta.startsWith(href + '/') ? 'page' : undefined);
+const activo = (href: string) =>
+  href !== '/' && href.startsWith('/') && !href.includes('#') && (ruta === href || ruta.startsWith(href + '/'))
+    ? 'page'
+    : href === '/' && ruta === '/'
+      ? 'page'
+      : undefined;
 ---
 
-<header class="encabezado">
-  <div class="contenedor encabezado-interior">
-    <a class="marca" href="/">Morado Bienes Raíces</a>
-    <nav class="nav-principal" aria-label="Navegación principal">
-      <ul>
+<header
+  class:list={[
+    'text-white',
+    sobrepuesto ? 'absolute inset-x-0 top-0 z-30 bg-transparent' : 'bg-morado-950',
+  ]}
+>
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
+    <Marca clase="text-white" />
+    <nav aria-label="Navegación principal" class="flex items-center gap-x-5 gap-y-2 sm:gap-x-7">
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:gap-x-7 sm:text-base">
         {
           enlaces.map((e) => (
             <li>
-              <a href={e.href} aria-current={activo(e.href)}>
+              <a
+                href={e.href}
+                aria-current={activo(e.href)}
+                class="text-white/80 no-underline transition-colors hover:text-white aria-[current=page]:text-white aria-[current=page]:underline aria-[current=page]:underline-offset-8"
+              >
                 {e.texto}
               </a>
             </li>
           ))
         }
       </ul>
+      <a
+        href="/contacto"
+        class="hidden rounded-full border border-white/40 px-5 py-2 text-sm font-medium text-white no-underline transition-colors hover:border-white hover:bg-white/10 sm:inline-flex"
+      >
+        Contáctanos
+      </a>
     </nav>
   </div>
 </header>

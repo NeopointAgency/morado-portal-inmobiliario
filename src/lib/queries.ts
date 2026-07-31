@@ -157,6 +157,21 @@ export async function configuracionSitio(): Promise<ConfiguracionSitio | null> {
   }
 }
 
+/** Imágenes para los sliders del héroe: destacadas primero, luego recientes. */
+export async function propiedadesParaHero(): Promise<Pick<Propiedad, 'slug' | 'titulo' | 'imagen_principal'>[]> {
+  return (await directus.request(
+    readItems('propiedades', {
+      fields: ['slug', 'titulo', 'imagen_principal'],
+      filter: {
+        estatus: { _nin: ['vendida', 'rentada'] },
+        imagen_principal: { _nnull: true },
+      },
+      sort: ['-destacada', '-date_created'],
+      limit: 14,
+    })
+  )) as Pick<Propiedad, 'slug' | 'titulo' | 'imagen_principal'>[];
+}
+
 /** Destacadas del singleton; si no hay, cae al toggle `destacada`. */
 export async function propiedadesDestacadas(config: ConfiguracionSitio | null): Promise<Propiedad[]> {
   const delSingleton = (config?.propiedades_destacadas ?? [])

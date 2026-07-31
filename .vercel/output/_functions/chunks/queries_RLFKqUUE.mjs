@@ -1,4 +1,4 @@
-import { n as directus } from "./directus_BGEgjMrk.mjs";
+import { n as directus } from "./directus_B0UXzgzJ.mjs";
 import { aggregate, readItems, readSingleton } from "@directus/sdk";
 var CAMPOS_TARJETA = [
 	"id",
@@ -108,6 +108,22 @@ async function configuracionSitio() {
 		return null;
 	}
 }
+/** Imágenes para los sliders del héroe: destacadas primero, luego recientes. */
+async function propiedadesParaHero() {
+	return await directus.request(readItems("propiedades", {
+		fields: [
+			"slug",
+			"titulo",
+			"imagen_principal"
+		],
+		filter: {
+			estatus: { _nin: ["vendida", "rentada"] },
+			imagen_principal: { _nnull: true }
+		},
+		sort: ["-destacada", "-date_created"],
+		limit: 14
+	}));
+}
 /** Destacadas del singleton; si no hay, cae al toggle `destacada`. */
 async function propiedadesDestacadas(config) {
 	const delSingleton = (config?.propiedades_destacadas ?? []).filter((j) => typeof j === "object" && j !== null).map((j) => j.propiedades_id).filter((p) => p && !["vendida", "rentada"].includes(p.estatus));
@@ -123,4 +139,4 @@ async function propiedadesDestacadas(config) {
 	}));
 }
 //#endregion
-export { propiedadPorSlug as a, filtrosDesdeParams as i, buscarPropiedades as n, propiedadesDeAsesor as o, configuracionSitio as r, propiedadesDestacadas as s, asesoresActivos as t };
+export { propiedadPorSlug as a, propiedadesParaHero as c, filtrosDesdeParams as i, buscarPropiedades as n, propiedadesDeAsesor as o, configuracionSitio as r, propiedadesDestacadas as s, asesoresActivos as t };

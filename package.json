@@ -14,7 +14,11 @@
   "dependencies": {
     "@astrojs/vercel": "^11.0.4",
     "@directus/sdk": "^24.0.0",
-    "astro": "^7.1.6"
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource/forum": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.1.6",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

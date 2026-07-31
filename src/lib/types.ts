@@ -124,6 +124,7 @@ export const TIPOS: { valor: TipoPropiedad; etiqueta: string }[] = [
 export const CIUDADES: { valor: string; etiqueta: string }[] = [
   { valor: 'celaya', etiqueta: 'Celaya' },
   { valor: 'queretaro', etiqueta: 'Querétaro' },
+  { valor: 'san_miguel_de_allende', etiqueta: 'San Miguel de Allende' },
   { valor: 'apaseo_el_grande', etiqueta: 'Apaseo el Grande' },
   { valor: 'villagran', etiqueta: 'Villagrán' },
   { valor: 'cortazar', etiqueta: 'Cortazar' },

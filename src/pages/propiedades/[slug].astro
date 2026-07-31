@@ -10,10 +10,12 @@ import type { Asesor, GaleriaItem } from '../../lib/types';
 export const prerender = false;
 
 const { slug } = Astro.params;
-const propiedad = slug ? await propiedadPorSlug(slug).catch((e) => {
-  console.error('[ficha] Error al consultar Directus', e);
-  return null;
-}) : null;
+const propiedad = slug
+  ? await propiedadPorSlug(slug).catch((e) => {
+      console.error('[ficha] Error al consultar Directus', e);
+      return null;
+    })
+  : null;
 
 if (!propiedad) {
   return Astro.rewrite('/404');
@@ -85,143 +87,166 @@ const jsonLd = {
 >
   <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
 
-  <div class="contenedor seccion">
-    <nav aria-label="Ruta de navegación" style="font-size: 0.9rem; margin-bottom: 1rem;">
-      <a href="/propiedades">← Ver propiedades</a>
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <nav aria-label="Ruta de navegación" class="mb-5 text-sm">
+      <a href="/propiedades" class="text-morado-700 no-underline hover:underline">← Ver propiedades</a>
     </nav>
 
-    <div class="ficha-columnas">
+    <div class="grid gap-10 lg:grid-cols-[1.8fr_1fr] lg:items-start">
       <article>
-        {p.imagen_principal && (
-          <img
-            src={assetUrl(p.imagen_principal, 'hero')}
-            alt={`Fotografía principal de ${p.titulo}`}
-            width={PRESETS.hero.width}
-            height={PRESETS.hero.height}
-            loading="eager"
-            fetchpriority="high"
-            style="border-radius: 0.5rem;"
-          />
-        )}
+        {
+          p.imagen_principal && (
+            <img
+              src={assetUrl(p.imagen_principal, 'hero')}
+              alt={`Fotografía principal de ${p.titulo}`}
+              width={PRESETS.hero.width}
+              height={PRESETS.hero.height}
+              loading="eager"
+              fetchpriority="high"
+              class="aspect-[16/10] w-full rounded-xl bg-morado-100 object-cover"
+            />
+          )
+        }
 
-        <header style="margin-top: 1.25rem;">
-          <span class="etiqueta-operacion">
+        <header class="mt-6">
+          <p class="text-sm font-medium tracking-wide text-morado-700 uppercase">
             {p.operacion === 'venta' ? 'En venta' : 'En renta'} · {etiqueta(p.tipo)}
             {p.estatus === 'apartada' && ' · Apartada'}
-          </span>
-          <h1 style="margin: 0.25rem 0;">{p.titulo}</h1>
-          {ubicacion && <p class="tarjeta-ubicacion">{ubicacion}</p>}
-          {p.mostrar_direccion_exacta && p.direccion && <p class="tarjeta-ubicacion">{p.direccion}</p>}
-          <p class="tarjeta-precio" style="font-size: 1.6rem;">{formatoPrecio(p.precio, p.moneda, p.operacion)}</p>
+          </p>
+          <h1 class="mt-1 text-3xl sm:text-4xl">{p.titulo}</h1>
+          {ubicacion && <p class="mt-1 text-morado-950/60">{ubicacion}</p>}
+          {p.mostrar_direccion_exacta && p.direccion && <p class="text-morado-950/60">{p.direccion}</p>}
+          <p class="mt-3 text-3xl font-semibold tracking-tight">{formatoPrecio(p.precio, p.moneda, p.operacion)}</p>
         </header>
 
-        {noDisponible && (
-          <p class="aviso" role="status">
-            Esta propiedad ya se {p.estatus === 'vendida' ? 'vendió' : 'rentó'}.
-            <a href="/propiedades">Mira otras propiedades disponibles</a>.
-          </p>
-        )}
-
-        {caracteristicas.length > 0 && (
-          <section class="seccion">
-            <h2>Características</h2>
-            <ul class="lista-caracteristicas">
-              {caracteristicas.map(([nombre, valor]) => (
-                <li>
-                  <strong>{nombre}:</strong> {valor}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {amenidades.length > 0 && (
-          <section class="seccion">
-            <h2>Amenidades</h2>
-            <ul class="tarjeta-detalles" style="font-size: 1rem;">
-              {amenidades.map((a) => (
-                <li>{a}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {p.descripcion && (
-          <section class="seccion">
-            <h2>Acerca de esta propiedad</h2>
-            <div set:html={p.descripcion} />
-          </section>
-        )}
-
-        {p.video_url && (
-          <section class="seccion">
-            <h2>Video</h2>
-            <p>
-              <a href={p.video_url} target="_blank" rel="noopener">Ver video de la propiedad</a>
+        {
+          noDisponible && (
+            <p class="mt-6 rounded-xl bg-morado-100 p-5 text-morado-950/80" role="status">
+              Esta propiedad ya se {p.estatus === 'vendida' ? 'vendió' : 'rentó'}.
+              <a href="/propiedades" class="font-medium text-morado-700">
+                Mira otras propiedades disponibles
+              </a>
+              .
             </p>
-          </section>
-        )}
+          )
+        }
 
-        {galeria.length > 0 && (
-          <section class="seccion">
-            <h2>Galería</h2>
-            <ul class="galeria">
-              {galeria.map((g, i) => (
-                <li>
-                  <img
-                    src={assetUrl(g.directus_files_id, 'galeria')}
-                    alt={`Fotografía ${i + 2} de ${p.titulo}`}
-                    width={PRESETS.galeria.width}
-                    height={PRESETS.galeria.height}
-                    loading="lazy"
-                    decoding="async"
-                    style="border-radius: 0.375rem;"
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {
+          caracteristicas.length > 0 && (
+            <section class="mt-10">
+              <h2 class="text-2xl">Características</h2>
+              <ul class="mt-4 grid list-none grid-cols-2 gap-x-6 gap-y-3 p-0 sm:grid-cols-3">
+                {caracteristicas.map(([nombre, valor]) => (
+                  <li class="rounded-lg bg-morado-50 px-4 py-3">
+                    <span class="block text-xs text-morado-950/50 uppercase">{nombre}</span>
+                    <span class="font-medium">{valor}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          amenidades.length > 0 && (
+            <section class="mt-10">
+              <h2 class="text-2xl">Amenidades</h2>
+              <ul class="mt-4 flex list-none flex-wrap gap-2 p-0">
+                {amenidades.map((a) => (
+                  <li class="rounded-full bg-morado-100 px-4 py-1.5 text-sm">{a}</li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          p.descripcion && (
+            <section class="mt-10">
+              <h2 class="text-2xl">Acerca de esta propiedad</h2>
+              <div class="prose-morado mt-4 max-w-none leading-relaxed text-morado-950/80" set:html={p.descripcion} />
+            </section>
+          )
+        }
+
+        {
+          p.video_url && (
+            <section class="mt-10">
+              <h2 class="text-2xl">Video</h2>
+              <p class="mt-3">
+                <a href={p.video_url} target="_blank" rel="noopener" class="boton-borde">
+                  Ver video de la propiedad
+                </a>
+              </p>
+            </section>
+          )
+        }
+
+        {
+          galeria.length > 0 && (
+            <section class="mt-10">
+              <h2 class="text-2xl">Galería</h2>
+              <ul class="mt-4 grid list-none gap-4 p-0 sm:grid-cols-2">
+                {galeria.map((g, i) => (
+                  <li>
+                    <img
+                      src={assetUrl(g.directus_files_id, 'galeria')}
+                      alt={`Fotografía ${i + 2} de ${p.titulo}`}
+                      width={PRESETS.galeria.width}
+                      height={PRESETS.galeria.height}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full rounded-xl bg-morado-100 object-cover"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
       </article>
 
-      <aside class="panel-asesor">
-        {asesor ? (
-          <>
-            <div style="display: flex; gap: 0.875rem; align-items: center; margin-bottom: 1rem;">
-              {asesor.foto && (
-                <img
-                  src={assetUrl(asesor.foto, 'thumb')}
-                  alt={`Fotografía de ${asesor.nombre}`}
-                  width="64"
-                  height="64"
-                  loading="lazy"
-                />
-              )}
-              <div>
-                <p style="margin: 0; font-weight: 700;">{asesor.nombre}</p>
-                {asesor.puesto && <p style="margin: 0; font-size: 0.85rem; color: var(--tinta-suave);">{asesor.puesto}</p>}
+      <aside class="rounded-xl bg-white p-6 shadow-lg ring-1 ring-morado-950/5 lg:sticky lg:top-6">
+        {
+          asesor ? (
+            <>
+              <div class="flex items-center gap-4">
+                {asesor.foto && (
+                  <img
+                    src={assetUrl(asesor.foto, 'thumb')}
+                    alt={`Fotografía de ${asesor.nombre}`}
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    class="h-16 w-16 rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <p class="font-medium">{asesor.nombre}</p>
+                  {asesor.puesto && <p class="text-sm text-morado-950/60">{asesor.puesto}</p>}
+                </div>
               </div>
-            </div>
-            {!noDisponible && (
-              <>
-                <a
-                  class="boton"
-                  style="display: block; text-align: center; margin-bottom: 1rem;"
-                  href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)}
-                >
-                  Enviar WhatsApp
-                </a>
-                <p style="text-align: center; color: var(--tinta-suave); font-size: 0.9rem;">o déjanos tus datos:</p>
-              </>
-            )}
-            {!noDisponible && <FormularioLead propiedadId={p.id} origen="ficha" />}
-          </>
-        ) : (
-          <>
-            <p style="font-weight: 700;">¿Te interesa esta propiedad?</p>
-            {!noDisponible && <FormularioLead propiedadId={p.id} origen="ficha" />}
-          </>
-        )}
+              {!noDisponible && (
+                <>
+                  <a class="boton-oscuro mt-5 w-full" href={whatsappUrl(asesor.whatsapp, p.titulo, urlFicha)}>
+                    Enviar WhatsApp
+                  </a>
+                  <p class="my-4 text-center text-sm text-morado-950/50">o déjanos tus datos:</p>
+                  <FormularioLead propiedadId={p.id} origen="ficha" />
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <p class="font-medium">¿Te interesa esta propiedad?</p>
+              {!noDisponible && (
+                <div class="mt-4">
+                  <FormularioLead propiedadId={p.id} origen="ficha" />
+                </div>
+              )}
+            </>
+          )
+        }
       </aside>
     </div>
   </div>

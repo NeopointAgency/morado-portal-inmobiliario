@@ -1,12 +1,12 @@
 import { t as __exportAll } from "./rolldown-runtime_D7D4PA-g.mjs";
 import { S as unescapeHTML, _ as addAttribute, d as renderTemplate, h as maybeRenderHead, i as renderComponent, w as createAstro } from "./server_90Bxd0vG.mjs";
 import { t as createComponent } from "./compiler_CQrhOVPY.mjs";
-import { t as $$Layout } from "./Layout_ClptnfvP.mjs";
-import { o as propiedadesDeAsesor, t as asesoresActivos } from "./queries_4NYa_xL2.mjs";
+import { t as $$Layout } from "./Layout_Be9o9pQ6.mjs";
+import { o as propiedadesDeAsesor, t as asesoresActivos } from "./queries_RLFKqUUE.mjs";
 import { t as whatsappUrl } from "./whatsapp_CksexClJ.mjs";
-import { n as assetUrl } from "./images_CQgbxwnI.mjs";
+import { n as assetUrl } from "./images_CGQAYpRQ.mjs";
 import { r as slugify } from "./format_DkXTey0E.mjs";
-import { t as $$TarjetaPropiedad } from "./TarjetaPropiedad_gafhivUm.mjs";
+import { t as $$TarjetaPropiedad } from "./TarjetaPropiedad_BwYq-nSE.mjs";
 //#region src/pages/asesores/[slug].astro
 var _slug__exports = /* @__PURE__ */ __exportAll({
 	default: () => $$Slug,
@@ -51,7 +51,7 @@ var $$Slug = createComponent(async ($$result, $$props, $$slots) => {
 		"ogImagen": asesor.foto ? assetUrl(asesor.foto, "card") : void 0,
 		"ogTipo": "profile"
 	}, {
-		"default": ($$result2) => renderTemplate`${maybeRenderHead($$result2)}<div class="contenedor seccion"><nav aria-label="Ruta de navegación" style="font-size: 0.9rem; margin-bottom: 1rem;"><a href="/asesores">← Nuestro equipo</a></nav><header style="display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; margin-bottom: 2rem;">${asesor.foto && renderTemplate`<img${addAttribute(assetUrl(asesor.foto, "thumb"), "src")}${addAttribute(`Fotografía de ${asesor.nombre}`, "alt")} width="112" height="112" style="border-radius: 50%; object-fit: cover; width: 7rem; height: 7rem;">`}<div><h1 style="margin: 0;">${asesor.nombre}</h1>${asesor.puesto && renderTemplate`<p style="margin: 0.25rem 0; color: var(--tinta-suave);">${asesor.puesto}</p>`}${asesor.bio && renderTemplate`<p style="margin: 0.5rem 0; max-width: 45rem;">${asesor.bio}</p>`}<p style="margin-top: 0.75rem;"><a class="boton"${addAttribute(whatsappUrl(asesor.whatsapp), "href")}>Enviar WhatsApp</a>${asesor.telefono && renderTemplate`<a class="boton boton-secundario"${addAttribute(`tel:${asesor.telefono.replace(/\s/g, "")}`, "href")} style="margin-left: 0.5rem;">Llamar</a>`}</p></div></header><section aria-labelledby="titulo-propiedades"><h2 id="titulo-propiedades">Propiedades de ${asesor.nombre.split(" ")[0]}</h2>${propiedades.length === 0 && renderTemplate`<p class="aviso">Por ahora no tiene propiedades publicadas.</p>`}<ul class="cuadricula-propiedades">${propiedades.map((p) => renderTemplate`<li>${renderComponent($$result2, "TarjetaPropiedad", $$TarjetaPropiedad, { "propiedad": p })}</li>`)}</ul></section></div>`,
+		"default": ($$result2) => renderTemplate`${maybeRenderHead($$result2)}<div class="bg-morado-950 text-white"><div class="mx-auto max-w-7xl px-4 pt-8 pb-12 sm:px-6"><nav aria-label="Ruta de navegación" class="mb-6 text-sm"><a href="/asesores" class="text-white/70 no-underline hover:text-white hover:underline">← Nuestro equipo</a></nav><div class="flex flex-wrap items-center gap-6">${asesor.foto && renderTemplate`<img${addAttribute(assetUrl(asesor.foto, "thumb"), "src")}${addAttribute(`Fotografía de ${asesor.nombre}`, "alt")} width="112" height="112" class="h-28 w-28 rounded-full border-2 border-white/20 object-cover">`}<div><h1 class="text-3xl sm:text-4xl">${asesor.nombre}</h1>${asesor.puesto && renderTemplate`<p class="mt-1 text-white/70">${asesor.puesto}</p>`}${asesor.bio && renderTemplate`<p class="mt-3 max-w-xl text-white/80">${asesor.bio}</p>`}<p class="mt-5 flex flex-wrap gap-3"><a class="boton-claro"${addAttribute(whatsappUrl(asesor.whatsapp), "href")}>Enviar WhatsApp</a>${asesor.telefono && renderTemplate`<a class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 font-medium text-white no-underline transition-colors hover:bg-white/10"${addAttribute(`tel:${asesor.telefono.replace(/\s/g, "")}`, "href")}>Llamar</a>`}</p></div></div></div></div><section class="mx-auto max-w-7xl px-4 py-12 sm:px-6" aria-labelledby="titulo-propiedades"><h2 id="titulo-propiedades" class="text-2xl sm:text-3xl">Propiedades de ${asesor.nombre.split(" ")[0]}</h2>${propiedades.length === 0 && renderTemplate`<p class="mt-6 rounded-xl bg-morado-100 p-6 text-morado-950/80">Por ahora no tiene propiedades publicadas.</p>`}<ul class="mt-6 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">${propiedades.map((p) => renderTemplate`<li>${renderComponent($$result2, "TarjetaPropiedad", $$TarjetaPropiedad, { "propiedad": p })}</li>`)}</ul></section>`,
 		"head": ($$result2) => renderTemplate`<script type="application/ld+json">${unescapeHTML(JSON.stringify(jsonLd))}<\/script>`
 	})}`;
 }, "/Users/edgarortega/morado-portal-inmobiliario/src/pages/asesores/[slug].astro", void 0);

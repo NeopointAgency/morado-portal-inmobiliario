@@ -1,4 +1,6 @@
 ---
+import '@fontsource/forum';
+import '@fontsource-variable/instrument-sans';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
@@ -9,9 +11,11 @@ interface Props {
   /** URL absoluta de la imagen para Open Graph (las fichas se comparten por WhatsApp) */
   ogImagen?: string;
   ogTipo?: string;
+  /** El home coloca el header flotando sobre el héroe full-screen */
+  encabezadoSobrepuesto?: boolean;
 }
 
-const { titulo, descripcion, ogImagen, ogTipo = 'website' } = Astro.props;
+const { titulo, descripcion, ogImagen, ogTipo = 'website', encabezadoSobrepuesto = false } = Astro.props;
 
 const sitio = import.meta.env.PUBLIC_SITE_URL ?? Astro.url.origin;
 const canonical = new URL(Astro.url.pathname, sitio).href;
@@ -25,6 +29,7 @@ const canonical = new URL(Astro.url.pathname, sitio).href;
     <title>{titulo}</title>
     {descripcion && <meta name="description" content={descripcion} />}
     <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#211036" />
 
     <meta property="og:title" content={titulo} />
     {descripcion && <meta property="og:description" content={descripcion} />}
@@ -38,8 +43,13 @@ const canonical = new URL(Astro.url.pathname, sitio).href;
     <slot name="head" />
   </head>
   <body>
-    <a class="visualmente-oculto" href="#contenido">Ir al contenido</a>
-    <Header />
+    <a
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2"
+      href="#contenido"
+    >
+      Ir al contenido
+    </a>
+    <Header sobrepuesto={encabezadoSobrepuesto} />
     <main id="contenido">
       <slot />
     </main>

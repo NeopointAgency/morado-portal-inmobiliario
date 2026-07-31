@@ -1,5 +1,5 @@
 import { t as __exportAll } from "./rolldown-runtime_D7D4PA-g.mjs";
-import { n as directus } from "./directus_BGEgjMrk.mjs";
+import { n as directus } from "./directus_B0UXzgzJ.mjs";
 import { r as slugify } from "./format_DkXTey0E.mjs";
 import { readItems } from "@directus/sdk";
 //#region src/pages/sitemap.xml.ts

@@ -106,7 +106,7 @@ export async function buscarPropiedades(f: FiltrosBusqueda): Promise<ResultadoBu
 
   const total = Number(conteo[0]?.count ?? 0);
   return {
-    items: items as Propiedad[],
+    items: items as unknown as Propiedad[],
     total,
     pagina: f.pagina,
     totalPaginas: Math.max(1, Math.ceil(total / POR_PAGINA)),
@@ -121,7 +121,7 @@ export async function propiedadPorSlug(slug: string): Promise<Propiedad | null> 
       limit: 1,
     })
   );
-  return (items[0] as Propiedad) ?? null;
+  return (items[0] as unknown as Propiedad) ?? null;
 }
 
 export async function propiedadesDeAsesor(asesorId: string): Promise<Propiedad[]> {

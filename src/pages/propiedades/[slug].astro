@@ -312,12 +312,12 @@ const jsonLd = {
               <div class="flex items-center gap-4">
                 {asesor.foto && (
                   <img
-                    src={assetUrl(asesor.foto, 'thumb')}
+                    src={assetUrl(asesor.foto, 'galeria')}
                     alt={`Fotografía de ${asesor.nombre}`}
                     width="64"
                     height="64"
                     loading="lazy"
-                    class="h-16 w-16 rounded-full object-cover"
+                    class="h-16 w-16 rounded-full object-cover object-top"
                   />
                 )}
                 <div>

@@ -19,9 +19,21 @@ export interface Asesor {
   activo: boolean;
 }
 
+export interface Zona {
+  id: number;
+  nombre: string;
+  ciudad: string;
+  sort: number | null;
+}
+
 export interface GaleriaItem {
   id: number;
   directus_files_id: string; // UUID de directus_files
+}
+
+/** Nombre de la zona cuando viene expandida desde la API */
+export function nombreZona(zona: Zona | number | null): string | null {
+  return zona && typeof zona === 'object' ? zona.nombre : null;
 }
 
 export interface Propiedad {
@@ -45,7 +57,7 @@ export interface Propiedad {
   antiguedad: number | null;
   amenidades: string[] | null;
 
-  zona: string | null;
+  zona: Zona | number | null;
   ciudad: string | null;
   direccion: string | null;
   ubicacion: { type: 'Point'; coordinates: [number, number] } | null;
@@ -108,6 +120,7 @@ export interface Testimonio {
 
 export interface Schema {
   testimonios: Testimonio[];
+  zonas: Zona[];
   asesores: Asesor[];
   propiedades: Propiedad[];
   configuracion_sitio: ConfiguracionSitio; // singleton

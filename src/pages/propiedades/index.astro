@@ -2,8 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 import TarjetaPropiedad from '../../components/TarjetaPropiedad.astro';
 import Paginacion from '../../components/Paginacion.astro';
-import { buscarPropiedades, filtrosDesdeParams } from '../../lib/queries';
-import { OPERACIONES, TIPOS, CIUDADES } from '../../lib/types';
+import { buscarPropiedades, filtrosDesdeParams, zonasDeCiudad } from '../../lib/queries';
+import { OPERACIONES, TIPOS, CIUDADES, type Zona } from '../../lib/types';
 import type { ResultadoBusqueda } from '../../lib/queries';
 
 export const prerender = false;
@@ -13,9 +13,13 @@ const filtros = filtrosDesdeParams(params);
 
 // Query params → filtro de Directus, siempre del lado del servidor.
 let resultado: ResultadoBusqueda | null = null;
+let zonas: Zona[] = [];
 let errorCarga = false;
 try {
-  resultado = await buscarPropiedades(filtros);
+  [resultado, zonas] = await Promise.all([
+    buscarPropiedades(filtros),
+    filtros.ciudad ? zonasDeCiudad(filtros.ciudad) : Promise.resolve([]),
+  ]);
 } catch (error) {
   console.error('[propiedades] Error al consultar Directus', error);
   errorCarga = true;
@@ -77,6 +81,22 @@ const claseLabel = 'mb-1 block text-sm font-medium';
           ))}
         </select>
       </div>
+
+      {
+        zonas.length > 0 && (
+          <div>
+            <label for="f-zona" class={claseLabel}>Zona</label>
+            <select id="f-zona" name="zona" class="campo-input">
+              <option value="">Todas</option>
+              {zonas.map((z) => (
+                <option value={String(z.id)} selected={filtros.zona === z.id}>
+                  {z.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
+      }
 
       <div>
         <label for="f-recamaras" class={claseLabel}>Recámaras</label>

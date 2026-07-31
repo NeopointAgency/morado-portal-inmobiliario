@@ -7,7 +7,7 @@ import { propiedadPorSlug } from '../../lib/queries';
 import { assetUrl, PRESETS } from '../../lib/images';
 import { formatoPrecio, etiqueta } from '../../lib/format';
 import { whatsappUrl, whatsappUrlMensaje } from '../../lib/whatsapp';
-import type { Asesor, GaleriaItem } from '../../lib/types';
+import { nombreZona, type Asesor, type GaleriaItem } from '../../lib/types';
 
 export const prerender = false;
 
@@ -30,7 +30,7 @@ const noDisponible = p.estatus === 'vendida' || p.estatus === 'rentada';
 const sitio = import.meta.env.PUBLIC_SITE_URL ?? Astro.url.origin;
 const urlFicha = new URL(`/propiedades/${p.slug}`, sitio).href;
 
-const ubicacion = [p.zona && etiqueta(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
+const ubicacion = [nombreZona(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
 
 // SEO: campos meta con fallback generado del título y la zona
 const tituloSeo = p.meta_titulo ?? `${p.titulo} | Morado Bienes Raíces`;

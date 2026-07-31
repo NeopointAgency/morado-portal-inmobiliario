@@ -1,5 +1,5 @@
 ---
-import type { Propiedad } from '../lib/types';
+import { nombreZona, type Propiedad } from '../lib/types';
 import { assetUrl, PRESETS } from '../lib/images';
 import { formatoPrecio, etiqueta } from '../lib/format';
 import Icono from './Icono.astro';
@@ -12,7 +12,7 @@ interface Props {
 
 const { propiedad: p, prioridad = false } = Astro.props;
 
-const ubicacion = [p.zona && etiqueta(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
+const ubicacion = [nombreZona(p.zona), p.ciudad && etiqueta(p.ciudad)].filter(Boolean).join(', ');
 
 const detalles: { icono: string; texto: string; etiqueta: string }[] = [];
 if (p.recamaras) detalles.push({ icono: 'cama', texto: `${p.recamaras}`, etiqueta: `${p.recamaras} recámaras` });

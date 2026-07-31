@@ -1,6 +1,6 @@
 import { readItems, readSingleton, aggregate } from '@directus/sdk';
 import { directus } from './directus';
-import type { Asesor, ConfiguracionSitio, Operacion, Propiedad, Testimonio, TipoPropiedad } from './types';
+import type { Asesor, ConfiguracionSitio, Operacion, Propiedad, Testimonio, TipoPropiedad, Zona } from './types';
 
 export const POR_PAGINA = 12;
 
@@ -19,14 +19,17 @@ const CAMPOS_TARJETA = [
   'estacionamientos',
   'm2_terreno',
   'm2_construccion',
-  'zona',
   'ciudad',
   'imagen_principal',
 ] as const;
 
+// La zona es relación: se pide expandida para mostrar su nombre
+const CAMPOS_TARJETA_REL = [...CAMPOS_TARJETA, { zona: ['id', 'nombre'] }] as any;
+
 export interface FiltrosBusqueda {
   ciudad?: string;
-  zona?: string;
+  /** id de la colección zonas */
+  zona?: number;
   operacion?: Operacion;
   tipo?: TipoPropiedad;
   precio_min?: number;
@@ -46,7 +49,7 @@ export function filtrosDesdeParams(params: URLSearchParams): FiltrosBusqueda {
 
   return {
     ciudad: str('ciudad'),
-    zona: str('zona'),
+    zona: num('zona'),
     operacion: str('operacion') as Operacion | undefined,
     tipo: str('tipo') as TipoPropiedad | undefined,
     precio_min: num('precio_min'),
@@ -91,7 +94,7 @@ export async function buscarPropiedades(f: FiltrosBusqueda): Promise<ResultadoBu
   const [items, conteo] = await Promise.all([
     directus.request(
       readItems('propiedades', {
-        fields: [...CAMPOS_TARJETA],
+        fields: CAMPOS_TARJETA_REL,
         filter,
         sort: ['-date_created'],
         limit: POR_PAGINA,
@@ -113,7 +116,7 @@ export async function buscarPropiedades(f: FiltrosBusqueda): Promise<ResultadoBu
 export async function propiedadPorSlug(slug: string): Promise<Propiedad | null> {
   const items = await directus.request(
     readItems('propiedades', {
-      fields: ['*', { asesor: ['*'] }, { galeria: ['id', 'directus_files_id'] }],
+      fields: ['*', { asesor: ['*'] }, { galeria: ['id', 'directus_files_id'] }, { zona: ['id', 'nombre'] }] as any,
       filter: { slug: { _eq: slug } },
       limit: 1,
     })
@@ -124,7 +127,7 @@ export async function propiedadPorSlug(slug: string): Promise<Propiedad | null> 
 export async function propiedadesDeAsesor(asesorId: string): Promise<Propiedad[]> {
   return (await directus.request(
     readItems('propiedades', {
-      fields: [...CAMPOS_TARJETA],
+      fields: CAMPOS_TARJETA_REL,
       filter: {
         asesor: { _eq: asesorId },
         estatus: { _nin: ['vendida', 'rentada'] },
@@ -133,6 +136,18 @@ export async function propiedadesDeAsesor(asesorId: string): Promise<Propiedad[]
       limit: 50,
     })
   )) as Propiedad[];
+}
+
+/** Zonas de una ciudad, para el filtro del listado */
+export async function zonasDeCiudad(ciudad: string): Promise<Zona[]> {
+  return (await directus.request(
+    readItems('zonas', {
+      fields: ['id', 'nombre', 'ciudad', 'sort'],
+      filter: { ciudad: { _eq: ciudad } },
+      sort: ['sort', 'nombre'],
+      limit: 100,
+    })
+  )) as Zona[];
 }
 
 export async function asesoresActivos(): Promise<Asesor[]> {
@@ -160,7 +175,7 @@ export async function configuracionSitio(): Promise<ConfiguracionSitio | null> {
   try {
     return (await directus.request(
       readSingleton('configuracion_sitio', {
-        fields: ['*', { propiedades_destacadas: ['id', { propiedades_id: [...CAMPOS_TARJETA] }] }],
+        fields: ['*', { propiedades_destacadas: ['id', { propiedades_id: CAMPOS_TARJETA_REL }] }],
       })
     )) as ConfiguracionSitio;
   } catch {
@@ -194,7 +209,7 @@ export async function propiedadesDestacadas(config: ConfiguracionSitio | null): 
 
   return (await directus.request(
     readItems('propiedades', {
-      fields: [...CAMPOS_TARJETA],
+      fields: CAMPOS_TARJETA_REL,
       filter: { destacada: { _eq: true }, estatus: { _nin: ['vendida', 'rentada'] } },
       sort: ['sort', '-date_created'],
       limit: 6,

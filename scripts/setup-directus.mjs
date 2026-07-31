@@ -171,6 +171,25 @@ await crearColeccion({
 });
 await crearRelacion({ collection: 'asesores', field: 'foto', related_collection: 'directus_files', schema: { on_delete: 'SET NULL' } });
 
+// 1b. zonas (propiedades la referencia)
+console.log('Colección zonas');
+await crearColeccion({
+  collection: 'zonas',
+  meta: {
+    icon: 'location_on',
+    note: 'Zonas/colonias por ciudad. El campo Zona de la propiedad muestra solo las de la ciudad elegida.',
+    display_template: '{{nombre}} ({{ciudad}})',
+    sort_field: 'sort',
+  },
+  schema: {},
+  fields: [
+    pkAuto,
+    texto('nombre', { required: true, width: 'half' }),
+    dropdown('ciudad', [['Celaya', 'celaya'], ['Querétaro', 'queretaro'], ['San Miguel de Allende', 'san_miguel_de_allende'], ['Apaseo el Grande', 'apaseo_el_grande'], ['Villagrán', 'villagran'], ['Cortazar', 'cortazar']], { required: true, width: 'half' }),
+    { field: 'sort', type: 'integer', meta: { hidden: true, interface: 'input' } },
+  ],
+});
+
 // 2. propiedades
 console.log('Colección propiedades');
 await crearColeccion({
@@ -200,7 +219,17 @@ await crearColeccion({
     { field: 'm2_construccion', type: 'decimal', meta: { interface: 'input', width: 'half' }, schema: { numeric_precision: 10, numeric_scale: 2 } },
     { field: 'antiguedad', type: 'integer', meta: { interface: 'input', width: 'half', note: 'Años' } },
     { field: 'amenidades', type: 'json', meta: { interface: 'tags', special: ['cast-json'], note: 'Alberca, jardín, seguridad…' } },
-    dropdown('zona', [['Centro', 'centro'], ['Norte', 'norte'], ['Sur', 'sur'], ['Oriente', 'oriente'], ['Poniente', 'poniente']], { width: 'half', options: { allowOther: true, choices: undefined } }),
+    {
+      field: 'zona',
+      type: 'integer',
+      meta: {
+        interface: 'select-dropdown-m2o',
+        special: ['m2o'],
+        width: 'half',
+        note: 'Elige primero la ciudad: aquí solo aparecen sus zonas',
+        options: { template: '{{nombre}}', filter: { ciudad: { _eq: '{{ciudad}}' } }, enableCreate: true },
+      },
+    },
     dropdown('ciudad', [['Celaya', 'celaya'], ['Querétaro', 'queretaro'], ['Apaseo el Grande', 'apaseo_el_grande'], ['Villagrán', 'villagran'], ['Cortazar', 'cortazar']], { width: 'half' }),
     texto('direccion', { note: 'Referencia interna, no siempre pública' }),
     toggle('mostrar_direccion_exacta', false, { note: 'Muchos vendedores no quieren dirección pública' }),
@@ -226,6 +255,7 @@ await crearColeccion({
     { field: 'user_created', type: 'uuid', meta: { special: ['user-created'], interface: 'select-dropdown-m2o', readonly: true, hidden: true } },
   ],
 });
+await crearRelacion({ collection: 'propiedades', field: 'zona', related_collection: 'zonas', schema: { on_delete: 'SET NULL' } });
 await crearRelacion({ collection: 'propiedades', field: 'imagen_principal', related_collection: 'directus_files', schema: { on_delete: 'SET NULL' } });
 await crearRelacion({ collection: 'propiedades', field: 'asesor', related_collection: 'asesores', schema: { on_delete: 'NO ACTION' } });
 await crearRelacion({ collection: 'propiedades', field: 'user_created', related_collection: 'directus_users', schema: { on_delete: 'SET NULL' } });
@@ -459,6 +489,7 @@ if (!politicaFront._existia) {
     { collection: 'configuracion_sitio', action: 'read', fields: ['*'] },
     { collection: 'configuracion_sitio_propiedades', action: 'read', fields: ['*'] },
     { collection: 'testimonios', action: 'read', fields: ['*'] },
+    { collection: 'zonas', action: 'read', fields: ['*'] },
     {
       collection: 'leads',
       action: 'create',
@@ -518,7 +549,7 @@ const politicaAdmin = await asegurar('/policies', 'admin_morado', {
   app_access: true,
 });
 if (!politicaAdmin._existia) {
-  const colecciones = ['asesores', 'propiedades', 'propiedades_files', 'configuracion_sitio', 'configuracion_sitio_propiedades', 'leads', 'testimonios'];
+  const colecciones = ['asesores', 'propiedades', 'propiedades_files', 'configuracion_sitio', 'configuracion_sitio_propiedades', 'leads', 'testimonios', 'zonas'];
   for (const collection of colecciones) {
     for (const action of ['create', 'read', 'update', 'delete']) {
       await api('POST', '/permissions', { policy: politicaAdmin.id, collection, action, fields: ['*'], permissions: {} });
